@@ -67,21 +67,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signUp = async (email: string, password: string, fullName: string) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-
-    if (data.user && !error) {
-      await supabase.from('profiles').insert({
-        id: data.user.id,
-        email: email,
-        full_name: fullName,
-        subscription_tier: 'free',
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
       });
-    }
 
-    return { error };
+      if (error) {
+        return { error };
+      }
+
+      if (data.user) {
+        const { error: profileError } = await supabase.from('profiles').insert({
+          id: data.user.id,
+          email: email,
+          full_name: fullName,
+          subscription_tier: 'free',
+        });
+
+        if (profileError) {
+          console.error('Profile creation error:', profileError);
+          return { error: { message: 'Failed to create user profile', name: 'ProfileError', status: 500 } as AuthError };
+        }
+      }
+
+      return { error: null };
+    } catch (err) {
+      console.error('Signup error:', err);
+      return { error: { message: 'An unexpected error occurred', name: 'UnknownError', status: 500 } as AuthError };
+    }
   };
 
   const signIn = async (email: string, password: string) => {
