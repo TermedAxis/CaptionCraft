@@ -7,7 +7,7 @@ const corsHeaders = {
 };
 
 interface ContentPlanRequest {
-  contentType: "post" | "carousel" | "video";
+  contentType: "post" | "carousel" | "video" | "thread";
   platform: string;
   topic: string;
   tone: string;
@@ -88,7 +88,7 @@ Return a JSON object with this exact structure:
 {
   "title": "Video title",
   "duration": "Recommended duration (e.g. 30s, 45s, 60s)",
-  "hook": "First 3 seconds hook - what to say/show to stop the scroll",
+  "hook": "First 3 seconds hook - what to say/show on screen to stop the scroll",
   "script": [
     {
       "timestamp": "0-5s",
@@ -105,6 +105,35 @@ Return a JSON object with this exact structure:
 }
 
 Include 4-8 script segments covering the full video.`;
+}
+
+function buildThreadPrompt(params: ContentPlanRequest): string {
+  return `You are an expert social media content strategist specializing in viral threads for ${params.platform}.
+
+Topic: ${params.topic}
+Tone: ${params.tone}
+${params.targetAudience ? `Target Audience: ${params.targetAudience}` : ""}
+${params.goal ? `Goal: ${params.goal}` : ""}
+${params.extraContext ? `Extra Context: ${params.extraContext}` : ""}
+
+Create a compelling 8-12 tweet thread. Each tweet MUST be under 280 characters. Return a JSON object with this exact structure:
+{
+  "title": "Thread title/theme",
+  "hook": "The opening tweet - must be under 280 chars, highly engaging, makes people want to read more",
+  "tweets": [
+    {
+      "number": 2,
+      "content": "Tweet content under 280 characters",
+      "charCount": 120
+    }
+  ],
+  "closingTweet": "Final tweet with CTA - under 280 chars",
+  "threadSummary": "One sentence describing what this thread is about",
+  "engagementTips": ["tip1", "tip2", "tip3"],
+  "hashtags": "3-5 relevant hashtags to add to the first tweet"
+}
+
+CRITICAL: Every tweet in "tweets" array must be under 280 characters. Include 7-10 tweets in the tweets array (not counting hook and closing tweet). Make the thread flow naturally with each tweet building on the previous.`;
 }
 
 Deno.serve(async (req: Request) => {
@@ -124,6 +153,8 @@ Deno.serve(async (req: Request) => {
       prompt = buildPostPrompt(params);
     } else if (params.contentType === "carousel") {
       prompt = buildCarouselPrompt(params);
+    } else if (params.contentType === "thread") {
+      prompt = buildThreadPrompt(params);
     } else {
       prompt = buildVideoPrompt(params);
     }

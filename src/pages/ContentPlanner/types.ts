@@ -1,4 +1,4 @@
-export type ContentTab = "post" | "carousel" | "video";
+export type ContentTab = "post" | "carousel" | "video" | "thread";
 
 export interface ContentFormValues {
   platform: string;
@@ -53,4 +53,20 @@ export interface VideoResult {
   caption: string;
   hashtags: string;
   productionTips: string[];
+}
+
+export interface ThreadTweet {
+  number: number;
+  content: string;
+  charCount: number;
+}
+
+export interface ThreadResult {
+  title: string;
+  hook: string;
+  tweets: ThreadTweet[];
+  closingTweet: string;
+  threadSummary: string;
+  engagementTips: string[];
+  hashtags: string;
 }

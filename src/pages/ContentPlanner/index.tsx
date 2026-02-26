@@ -1,12 +1,20 @@
 import { useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../contexts/AuthContext";
-import { AlignLeft, LayoutGrid, Video, Copy, Check, Bookmark, BookmarkCheck, AlertCircle, Wand2 } from "lucide-react";
+import { AlignLeft, LayoutGrid, Video, MessageSquare, Copy, Check, Bookmark, BookmarkCheck, AlertCircle, Wand2 } from "lucide-react";
 import { ContentForm } from "./ContentForm";
 import { PostResult } from "./PostResult";
 import { CarouselResult } from "./CarouselResult";
 import { VideoResult } from "./VideoResult";
-import { ContentTab, ContentFormValues, PostResult as PostResultType, CarouselResult as CarouselResultType, VideoResult as VideoResultType } from "./types";
+import { ThreadResult } from "./ThreadResult";
+import {
+  ContentTab,
+  ContentFormValues,
+  PostResult as PostResultType,
+  CarouselResult as CarouselResultType,
+  VideoResult as VideoResultType,
+  ThreadResult as ThreadResultType,
+} from "./types";
 
 const DEFAULT_FORM: ContentFormValues = {
   platform: "instagram",
@@ -17,11 +25,21 @@ const DEFAULT_FORM: ContentFormValues = {
   extraContext: "",
 };
 
-const TAB_CONFIG: { id: ContentTab; label: string; icon: React.ElementType; description: string }[] = [
-  { id: "post", label: "Social Post", icon: AlignLeft, description: "Single image or text post" },
-  { id: "carousel", label: "Carousel", icon: LayoutGrid, description: "Multi-slide swipeable post" },
-  { id: "video", label: "Short Video", icon: Video, description: "Reels, TikToks & Shorts" },
+const TAB_CONFIG: { id: ContentTab; label: string; icon: React.ElementType; description: string; defaultPlatform: string }[] = [
+  { id: "post", label: "Social Post", icon: AlignLeft, description: "Single image or text post", defaultPlatform: "instagram" },
+  { id: "carousel", label: "Carousel", icon: LayoutGrid, description: "Multi-slide swipeable post", defaultPlatform: "instagram" },
+  { id: "video", label: "Short Video", icon: Video, description: "Reels, TikToks & Shorts", defaultPlatform: "tiktok" },
+  { id: "thread", label: "Thread", icon: MessageSquare, description: "Twitter / Threads thread", defaultPlatform: "twitter" },
 ];
+
+const RESULT_LABELS: Record<ContentTab, string> = {
+  post: "Post Plan",
+  carousel: "Carousel Plan",
+  video: "Video Script",
+  thread: "Thread",
+};
+
+type AnyResult = PostResultType | CarouselResultType | VideoResultType | ThreadResultType;
 
 export function ContentPlanner() {
   const { profile } = useAuth();
@@ -29,16 +47,17 @@ export function ContentPlanner() {
   const [form, setForm] = useState<ContentFormValues>(DEFAULT_FORM);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [result, setResult] = useState<PostResultType | CarouselResultType | VideoResultType | null>(null);
-  const [currentTab, setCurrentTab] = useState<ContentTab>("post");
+  const [result, setResult] = useState<AnyResult | null>(null);
+  const [resultTab, setResultTab] = useState<ContentTab>("post");
   const [copied, setCopied] = useState(false);
   const [saved, setSaved] = useState(false);
 
   const handleTabChange = (newTab: ContentTab) => {
+    const config = TAB_CONFIG.find((t) => t.id === newTab)!;
     setTab(newTab);
     setResult(null);
     setError("");
-    setForm({ ...DEFAULT_FORM });
+    setForm({ ...DEFAULT_FORM, platform: config.defaultPlatform });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -71,7 +90,7 @@ export function ContentPlanner() {
       if (!response.ok) throw new Error(data.error || "Failed to generate content plan");
 
       setResult(data.result);
-      setCurrentTab(tab);
+      setResultTab(tab);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to generate content plan");
     } finally {
@@ -92,7 +111,7 @@ export function ContentPlanner() {
     try {
       await supabase.from("content_plans").insert({
         user_id: profile.id,
-        content_type: currentTab,
+        content_type: resultTab,
         platform: form.platform,
         topic: form.topic,
         tone: form.tone,
@@ -168,9 +187,7 @@ export function ContentPlanner() {
           {result && !loading && (
             <div>
               <div className="flex items-center justify-between mb-4">
-                <span className="text-sm font-medium text-gray-500">
-                  {currentTab === "post" ? "Post Plan" : currentTab === "carousel" ? "Carousel Plan" : "Video Script"}
-                </span>
+                <span className="text-sm font-medium text-gray-500">{RESULT_LABELS[resultTab]}</span>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handleCopy}
@@ -194,9 +211,10 @@ export function ContentPlanner() {
                 </div>
               </div>
 
-              {currentTab === "post" && <PostResult result={result as PostResultType} />}
-              {currentTab === "carousel" && <CarouselResult result={result as CarouselResultType} />}
-              {currentTab === "video" && <VideoResult result={result as VideoResultType} />}
+              {resultTab === "post" && <PostResult result={result as PostResultType} />}
+              {resultTab === "carousel" && <CarouselResult result={result as CarouselResultType} />}
+              {resultTab === "video" && <VideoResult result={result as VideoResultType} />}
+              {resultTab === "thread" && <ThreadResult result={result as ThreadResultType} />}
             </div>
           )}
         </div>

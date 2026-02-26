@@ -4,6 +4,7 @@ import { ContentTab, ContentFormValues } from "./types";
 const POST_PLATFORMS = ["Instagram", "Facebook", "LinkedIn", "Twitter", "Threads"];
 const CAROUSEL_PLATFORMS = ["Instagram", "LinkedIn", "Facebook"];
 const VIDEO_PLATFORMS = ["TikTok", "Instagram Reels", "YouTube Shorts", "Facebook Reels"];
+const THREAD_PLATFORMS = ["Twitter", "Threads"];
 
 const TONES = ["Casual", "Professional", "Educational", "Inspirational", "Funny", "Bold", "Storytelling"];
 
@@ -11,6 +12,21 @@ const GOALS: Record<ContentTab, string[]> = {
   post: ["Build brand awareness", "Drive engagement", "Generate leads", "Promote product/service", "Educate audience", "Entertain"],
   carousel: ["Teach a concept", "Showcase products", "Share tips/how-to", "Tell a story", "Build authority", "Drive saves"],
   video: ["Go viral", "Educate viewers", "Showcase product", "Build community", "Drive website traffic", "Entertain"],
+  thread: ["Share expertise", "Tell a story", "Break down a topic", "Build authority", "Drive engagement", "Educate followers"],
+};
+
+const TOPIC_PLACEHOLDERS: Record<ContentTab, string> = {
+  post: "e.g., 5 morning habits that changed my life...",
+  carousel: "e.g., How to grow your Instagram from 0 to 10k followers...",
+  video: "e.g., Day in the life of a freelance designer...",
+  thread: "e.g., Everything I learned about building a startup in 2 years...",
+};
+
+const BUTTON_LABELS: Record<ContentTab, string> = {
+  post: "Post Plan",
+  carousel: "Carousel Plan",
+  video: "Video Script",
+  thread: "Thread",
 };
 
 interface ContentFormProps {
@@ -22,7 +38,11 @@ interface ContentFormProps {
 }
 
 export function ContentForm({ tab, values, onChange, onSubmit, loading }: ContentFormProps) {
-  const platforms = tab === "post" ? POST_PLATFORMS : tab === "carousel" ? CAROUSEL_PLATFORMS : VIDEO_PLATFORMS;
+  const platforms =
+    tab === "post" ? POST_PLATFORMS :
+    tab === "carousel" ? CAROUSEL_PLATFORMS :
+    tab === "thread" ? THREAD_PLATFORMS :
+    VIDEO_PLATFORMS;
 
   const set = (field: keyof ContentFormValues) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -66,13 +86,7 @@ export function ContentForm({ tab, values, onChange, onSubmit, loading }: Conten
           rows={3}
           value={values.topic}
           onChange={set("topic")}
-          placeholder={
-            tab === "post"
-              ? "e.g., 5 morning habits that changed my life..."
-              : tab === "carousel"
-              ? "e.g., How to grow your Instagram from 0 to 10k followers..."
-              : "e.g., Day in the life of a freelance designer..."
-          }
+          placeholder={TOPIC_PLACEHOLDERS[tab]}
           className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm"
         />
       </div>
@@ -126,7 +140,7 @@ export function ContentForm({ tab, values, onChange, onSubmit, loading }: Conten
         ) : (
           <>
             <Wand2 className="w-5 h-5" />
-            Generate {tab === "post" ? "Post Plan" : tab === "carousel" ? "Carousel Plan" : "Video Script"}
+            Generate {BUTTON_LABELS[tab]}
           </>
         )}
       </button>

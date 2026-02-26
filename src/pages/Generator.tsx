@@ -221,7 +221,6 @@ export function Generator() {
                   <option value="reel">Reel</option>
                   <option value="carousel">Carousel</option>
                   <option value="short">Short</option>
-                  <option value="thread">Thread</option>
                 </select>
               </div>
             </div>
