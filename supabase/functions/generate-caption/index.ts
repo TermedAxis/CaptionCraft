@@ -15,6 +15,8 @@ interface CaptionRequest {
   tone: string;
   cta?: string;
   emojiLevel: string;
+  includeHashtags: boolean;
+  customHashtags?: string[];
 }
 
 const GROQ_API_KEY = Deno.env.get('GROQ_API_KEY');
@@ -35,6 +37,12 @@ function buildPrompt(params: CaptionRequest): string {
     heavy: "Use emojis frequently (6-10) to create visual interest."
   };
 
+  const hashtagInstructions = !params.includeHashtags
+    ? 'Do NOT include any hashtags. Leave the hashtags field as an empty string.'
+    : params.customHashtags && params.customHashtags.length > 0
+    ? `MUST include these specific hashtags: ${params.customHashtags.map(t => `#${t}`).join(' ')}. You may add additional relevant hashtags alongside them.`
+    : 'Include relevant hashtags appropriate for the platform.';
+
   return `You are an expert social media copywriter specializing in ${params.platform} content.
 
 Create 3 variations of a ${params.platform} caption with these requirements:
@@ -50,6 +58,7 @@ Emoji Level: ${params.emojiLevel}
 
 Platform Guidelines: ${platformGuidelines[params.platform.toLowerCase()] || 'Follow best practices for engagement.'}
 Emoji Rules: ${emojiGuidelines[params.emojiLevel]}
+Hashtag Rules: ${hashtagInstructions}
 
 IMPORTANT RULES:
 - Make each variation meaningfully different in style and approach
@@ -58,7 +67,6 @@ IMPORTANT RULES:
 - Match the platform's culture and best practices
 - Respect character limits for ${params.platform}
 - Format appropriately for ${params.platform} (line breaks, spacing, etc.)
-- Hashtags should be relevant and not spammy
 - ${params.cta ? `Include the CTA naturally: ${params.cta}` : ''}
 
 Return a JSON object with this exact structure:
@@ -67,17 +75,17 @@ Return a JSON object with this exact structure:
     {
       "version": "A",
       "caption": "caption text here",
-      "hashtags": "hashtags here (if applicable for platform)"
+      "hashtags": "hashtags here or empty string if disabled"
     },
     {
       "version": "B",
       "caption": "caption text here",
-      "hashtags": "hashtags here (if applicable for platform)"
+      "hashtags": "hashtags here or empty string if disabled"
     },
     {
       "version": "C",
       "caption": "caption text here",
-      "hashtags": "hashtags here (if applicable for platform)"
+      "hashtags": "hashtags here or empty string if disabled"
     }
   ]
 }`;

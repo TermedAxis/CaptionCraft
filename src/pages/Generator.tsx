@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, KeyboardEvent } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { Sparkles, Copy, Check, AlertCircle, Loader2 } from 'lucide-react';
+import { Sparkles, Copy, Check, AlertCircle, Loader2, Hash, X } from 'lucide-react';
 
 type CaptionVariation = {
   version: string;
@@ -21,6 +21,9 @@ export function Generator() {
   const [tone, setTone] = useState('casual');
   const [cta, setCta] = useState('');
   const [emojiLevel, setEmojiLevel] = useState('medium');
+  const [includeHashtags, setIncludeHashtags] = useState(true);
+  const [customHashtags, setCustomHashtags] = useState<string[]>([]);
+  const [hashtagInput, setHashtagInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [variations, setVariations] = useState<CaptionVariation[]>([]);
@@ -105,6 +108,8 @@ export function Generator() {
           tone,
           cta: cta || undefined,
           emojiLevel,
+          includeHashtags,
+          customHashtags: customHashtags.length > 0 ? customHashtags : undefined,
         }),
       });
 
@@ -141,6 +146,25 @@ export function Generator() {
     } catch (err) {
       alert('Failed to save caption');
     }
+  };
+
+  const addHashtag = (value: string) => {
+    const cleaned = value.trim().replace(/^#+/, '');
+    if (cleaned && !customHashtags.includes(cleaned)) {
+      setCustomHashtags([...customHashtags, cleaned]);
+    }
+    setHashtagInput('');
+  };
+
+  const handleHashtagKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' || e.key === ',' || e.key === ' ') {
+      e.preventDefault();
+      addHashtag(hashtagInput);
+    }
+  };
+
+  const removeHashtag = (tag: string) => {
+    setCustomHashtags(customHashtags.filter((t) => t !== tag));
   };
 
   const handleCopy = async (index: number, text: string, hashtags: string) => {
@@ -294,6 +318,70 @@ export function Generator() {
                 <option value="Save this post">Save this post</option>
                 <option value="Share with a friend">Share with a friend</option>
               </select>
+            </div>
+
+            <div className="border border-gray-200 rounded-lg p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Hash className="w-4 h-4 text-gray-500" />
+                  <span className="text-sm font-medium text-gray-700">Hashtags</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIncludeHashtags(!includeHashtags)}
+                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${includeHashtags ? 'bg-blue-600' : 'bg-gray-300'}`}
+                >
+                  <span
+                    className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform ${includeHashtags ? 'translate-x-4.5' : 'translate-x-0.5'}`}
+                  />
+                </button>
+              </div>
+
+              {includeHashtags && (
+                <div className="space-y-2">
+                  <p className="text-xs text-gray-500">Add hashtags you want included in the caption</p>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">#</span>
+                      <input
+                        type="text"
+                        value={hashtagInput}
+                        onChange={(e) => setHashtagInput(e.target.value)}
+                        onKeyDown={handleHashtagKeyDown}
+                        onBlur={() => hashtagInput && addHashtag(hashtagInput)}
+                        placeholder="fitness, travel, food..."
+                        className="w-full pl-7 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => addHashtag(hashtagInput)}
+                      className="px-3 py-2 bg-gray-100 text-gray-700 text-sm rounded-lg hover:bg-gray-200 transition"
+                    >
+                      Add
+                    </button>
+                  </div>
+                  {customHashtags.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {customHashtags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full"
+                        >
+                          #{tag}
+                          <button
+                            type="button"
+                            onClick={() => removeHashtag(tag)}
+                            className="hover:text-blue-900 transition"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {error && (
