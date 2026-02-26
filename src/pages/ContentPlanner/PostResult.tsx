@@ -1,11 +1,16 @@
 import { Clock, Hash, Lightbulb, MessageCircle, Zap } from "lucide-react";
 import { PostResult as PostResultType } from "./types";
+import { ImageGeneratorPanel } from "./ImageGeneratorPanel";
+import { useImageGeneration } from "./useImageGeneration";
 
 interface PostResultProps {
   result: PostResultType;
 }
 
 export function PostResult({ result }: PostResultProps) {
+  const { images, loadingKeys, errorKeys, generateImage, clearImage } = useImageGeneration();
+  const imagePrompt = `Social media post image: ${result.title}. ${result.hook}. Visually striking, high quality photography or illustration, no text overlay.`;
+
   return (
     <div className="space-y-5">
       <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
@@ -47,6 +52,19 @@ export function PostResult({ result }: PostResultProps) {
           </div>
         </div>
       </div>
+
+      <ImageGeneratorPanel
+        imageKey="post-main"
+        defaultPrompt={imagePrompt}
+        imageUrl={images["post-main"]?.imageUrl}
+        loading={loadingKeys["post-main"]}
+        error={errorKeys["post-main"]}
+        onGenerate={generateImage}
+        onClear={clearImage}
+        width={1080}
+        height={1080}
+        label="Post Image"
+      />
 
       {result.contentTips?.length > 0 && (
         <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
