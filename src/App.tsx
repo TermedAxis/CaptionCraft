@@ -6,9 +6,10 @@ import { Signup } from './pages/Signup';
 import { Generator } from './pages/Generator';
 import { SavedCaptions } from './pages/SavedCaptions';
 import { Upgrade } from './pages/Upgrade';
+import { ContentPlanner } from './pages/ContentPlanner';
 import { DashboardLayout } from './components/DashboardLayout';
 
-type Page = 'landing' | 'login' | 'signup' | 'generator' | 'saved';
+type Page = 'landing' | 'login' | 'signup' | 'generator' | 'saved' | 'planner';
 
 function AppContent() {
   const { user, loading } = useAuth();
@@ -33,13 +34,21 @@ function AppContent() {
     return <Landing onGetStarted={() => setPage('signup')} />;
   }
 
+  const currentNavPage = page === 'saved' ? 'saved' : page === 'planner' ? 'planner' : 'generator';
+
   return (
     <>
       <DashboardLayout
-        currentPage={page === 'saved' ? 'saved' : 'generator'}
+        currentPage={currentNavPage}
         onNavigate={(newPage) => setPage(newPage)}
       >
-        {page === 'saved' ? <SavedCaptions /> : <Generator />}
+        {page === 'saved' ? (
+          <SavedCaptions />
+        ) : page === 'planner' ? (
+          <ContentPlanner />
+        ) : (
+          <Generator />
+        )}
       </DashboardLayout>
 
       {showUpgrade && <Upgrade onClose={() => setShowUpgrade(false)} />}

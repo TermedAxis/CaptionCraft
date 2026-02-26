@@ -1,17 +1,25 @@
 import { ReactNode } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Sparkles, FileText, LogOut, Crown } from 'lucide-react';
+import { Sparkles, FileText, LogOut, Crown, LayoutGrid } from 'lucide-react';
+
+type NavPage = 'generator' | 'saved' | 'planner';
 
 type DashboardLayoutProps = {
   children: ReactNode;
-  currentPage: 'generator' | 'saved';
-  onNavigate: (page: 'generator' | 'saved') => void;
+  currentPage: NavPage;
+  onNavigate: (page: NavPage) => void;
 };
 
 export function DashboardLayout({ children, currentPage, onNavigate }: DashboardLayoutProps) {
   const { signOut, profile } = useAuth();
 
   const isPaid = profile?.subscription_tier === 'paid';
+
+  const navItems: { id: NavPage; label: string; icon: React.ElementType }[] = [
+    { id: 'generator', label: 'Generate', icon: Sparkles },
+    { id: 'planner', label: 'Content Planner', icon: LayoutGrid },
+    { id: 'saved', label: 'Saved', icon: FileText },
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -24,28 +32,21 @@ export function DashboardLayout({ children, currentPage, onNavigate }: Dashboard
                 <span className="text-xl font-bold text-gray-900">CaptionCraft</span>
               </div>
 
-              <div className="hidden md:flex items-center gap-2">
-                <button
-                  onClick={() => onNavigate('generator')}
-                  className={`px-4 py-2 rounded-lg font-medium transition ${
-                    currentPage === 'generator'
-                      ? 'bg-blue-50 text-blue-600'
-                      : 'text-gray-600 hover:bg-gray-50'
-                  }`}
-                >
-                  Generate
-                </button>
-                <button
-                  onClick={() => onNavigate('saved')}
-                  className={`px-4 py-2 rounded-lg font-medium transition flex items-center gap-2 ${
-                    currentPage === 'saved'
-                      ? 'bg-blue-50 text-blue-600'
-                      : 'text-gray-600 hover:bg-gray-50'
-                  }`}
-                >
-                  <FileText className="w-4 h-4" />
-                  Saved
-                </button>
+              <div className="hidden md:flex items-center gap-1">
+                {navItems.map(({ id, label, icon: Icon }) => (
+                  <button
+                    key={id}
+                    onClick={() => onNavigate(id)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition ${
+                      currentPage === id
+                        ? 'bg-blue-50 text-blue-600'
+                        : 'text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    {label}
+                  </button>
+                ))}
               </div>
             </div>
 
