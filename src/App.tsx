@@ -1,57 +1,48 @@
 import { useState } from 'react';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { Landing } from './pages/Landing';
-import { Login } from './pages/Login';
-import { Signup } from './pages/Signup';
+import { AuthProvider } from './contexts/AuthContext';
 import { Generator } from './pages/Generator';
 import { SavedCaptions } from './pages/SavedCaptions';
 import { Upgrade } from './pages/Upgrade';
 import { ContentPlanner } from './pages/ContentPlanner';
 import { DashboardLayout } from './components/DashboardLayout';
+import { AuthModal } from './components/AuthModal';
 
-type Page = 'landing' | 'login' | 'signup' | 'generator' | 'saved' | 'planner';
+type Page = 'generator' | 'saved' | 'planner';
 
 function AppContent() {
-  const { user, loading } = useAuth();
-  const [page, setPage] = useState<Page>('landing');
+  const [page, setPage] = useState<Page>('generator');
   const [showUpgrade, setShowUpgrade] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authModalMessage, setAuthModalMessage] = useState<string | undefined>();
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    if (page === 'signup') {
-      return <Signup onSwitchToLogin={() => setPage('login')} />;
-    }
-    if (page === 'login') {
-      return <Login onSwitchToSignup={() => setPage('signup')} />;
-    }
-    return <Landing onGetStarted={() => setPage('signup')} />;
-  }
-
-  const currentNavPage = page === 'saved' ? 'saved' : page === 'planner' ? 'planner' : 'generator';
+  const requestAuth = (message?: string) => {
+    setAuthModalMessage(message);
+    setShowAuthModal(true);
+  };
 
   return (
     <>
       <DashboardLayout
-        currentPage={currentNavPage}
-        onNavigate={(newPage) => setPage(newPage)}
+        currentPage={page}
+        onNavigate={setPage}
+        onRequestAuth={requestAuth}
       >
         {page === 'saved' ? (
-          <SavedCaptions />
+          <SavedCaptions onRequestAuth={requestAuth} />
         ) : page === 'planner' ? (
-          <ContentPlanner />
+          <ContentPlanner onRequestAuth={requestAuth} />
         ) : (
-          <Generator />
+          <Generator onRequestAuth={requestAuth} />
         )}
       </DashboardLayout>
 
       {showUpgrade && <Upgrade onClose={() => setShowUpgrade(false)} />}
+      {showAuthModal && (
+        <AuthModal
+          onClose={() => setShowAuthModal(false)}
+          message={authModalMessage}
+        />
+      )}
     </>
   );
 }

@@ -41,8 +41,12 @@ const RESULT_LABELS: Record<ContentTab, string> = {
 
 type AnyResult = PostResultType | CarouselResultType | VideoResultType | ThreadResultType;
 
-export function ContentPlanner() {
-  const { profile } = useAuth();
+interface ContentPlannerProps {
+  onRequestAuth: (message?: string) => void;
+}
+
+export function ContentPlanner({ onRequestAuth }: ContentPlannerProps) {
+  const { user, profile } = useAuth();
   const [tab, setTab] = useState<ContentTab>("post");
   const [form, setForm] = useState<ContentFormValues>(DEFAULT_FORM);
   const [loading, setLoading] = useState(false);
@@ -62,6 +66,12 @@ export function ContentPlanner() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!user) {
+      onRequestAuth("Sign in to generate content plans");
+      return;
+    }
+
     setError("");
     setResult(null);
     setLoading(true);
@@ -107,7 +117,11 @@ export function ContentPlanner() {
   };
 
   const handleSave = async () => {
-    if (!result || !profile) return;
+    if (!result) return;
+    if (!user || !profile) {
+      onRequestAuth("Sign in to save your content plans");
+      return;
+    }
     try {
       await supabase.from("content_plans").insert({
         user_id: profile.id,

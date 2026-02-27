@@ -3,8 +3,12 @@ import { supabase, Caption } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { Copy, Check, Trash2, Filter } from 'lucide-react';
 
-export function SavedCaptions() {
-  const { profile } = useAuth();
+interface SavedCaptionsProps {
+  onRequestAuth: (message?: string) => void;
+}
+
+export function SavedCaptions({ onRequestAuth: _onRequestAuth }: SavedCaptionsProps) {
+  const { user, profile } = useAuth();
   const [captions, setCaptions] = useState<Caption[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPlatform, setSelectedPlatform] = useState<string>('all');
@@ -15,7 +19,10 @@ export function SavedCaptions() {
   }, [profile, selectedPlatform]);
 
   const loadCaptions = async () => {
-    if (!profile) return;
+    if (!profile) {
+      setLoading(false);
+      return;
+    }
 
     setLoading(true);
     let query = supabase
@@ -61,6 +68,21 @@ export function SavedCaptions() {
       year: 'numeric',
     });
   };
+
+  if (!user) {
+    return (
+      <div className="max-w-5xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Saved Captions</h1>
+          <p className="text-gray-600">Access all your generated captions</p>
+        </div>
+        <div className="bg-gray-50 rounded-xl border-2 border-dashed border-gray-300 p-16 text-center">
+          <p className="text-gray-600 font-medium mb-2">Sign in to view your saved captions</p>
+          <p className="text-sm text-gray-400">Your saved content will appear here after signing in</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-5xl mx-auto">

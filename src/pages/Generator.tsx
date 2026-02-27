@@ -11,8 +11,12 @@ type CaptionVariation = {
 
 const FREE_TIER_DAILY_LIMIT = 5;
 
-export function Generator() {
-  const { profile } = useAuth();
+interface GeneratorProps {
+  onRequestAuth: (message?: string) => void;
+}
+
+export function Generator({ onRequestAuth }: GeneratorProps) {
+  const { user, profile } = useAuth();
   const [platform, setPlatform] = useState('instagram');
   const [contentType, setContentType] = useState('post');
   const [topic, setTopic] = useState('');
@@ -81,6 +85,12 @@ export function Generator() {
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!user) {
+      onRequestAuth("Sign in to generate captions");
+      return;
+    }
+
     setError('');
     setVariations([]);
     setLoading(true);
@@ -129,7 +139,10 @@ export function Generator() {
   };
 
   const handleSave = async (variation: CaptionVariation) => {
-    if (!profile) return;
+    if (!user || !profile) {
+      onRequestAuth("Sign in to save captions");
+      return;
+    }
 
     try {
       await supabase.from('captions').insert({

@@ -8,10 +8,11 @@ type DashboardLayoutProps = {
   children: ReactNode;
   currentPage: NavPage;
   onNavigate: (page: NavPage) => void;
+  onRequestAuth: (message?: string) => void;
 };
 
-export function DashboardLayout({ children, currentPage, onNavigate }: DashboardLayoutProps) {
-  const { signOut, profile } = useAuth();
+export function DashboardLayout({ children, currentPage, onNavigate, onRequestAuth }: DashboardLayoutProps) {
+  const { user, signOut, profile } = useAuth();
 
   const isPaid = profile?.subscription_tier === 'paid';
 
@@ -20,6 +21,14 @@ export function DashboardLayout({ children, currentPage, onNavigate }: Dashboard
     { id: 'planner', label: 'Content Planner', icon: LayoutGrid },
     { id: 'saved', label: 'Saved', icon: FileText },
   ];
+
+  const handleNavClick = (id: NavPage) => {
+    if (id === 'saved' && !user) {
+      onRequestAuth('Sign in to view your saved captions');
+      return;
+    }
+    onNavigate(id);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -36,7 +45,7 @@ export function DashboardLayout({ children, currentPage, onNavigate }: Dashboard
                 {navItems.map(({ id, label, icon: Icon }) => (
                   <button
                     key={id}
-                    onClick={() => onNavigate(id)}
+                    onClick={() => handleNavClick(id)}
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition ${
                       currentPage === id
                         ? 'bg-blue-50 text-blue-600'
@@ -50,26 +59,43 @@ export function DashboardLayout({ children, currentPage, onNavigate }: Dashboard
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
-              {isPaid && (
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-lg">
-                  <Crown className="w-4 h-4 text-white" />
-                  <span className="text-sm font-semibold text-white">Pro</span>
+            <div className="flex items-center gap-3">
+              {user ? (
+                <>
+                  {isPaid && (
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-lg">
+                      <Crown className="w-4 h-4 text-white" />
+                      <span className="text-sm font-semibold text-white">Pro</span>
+                    </div>
+                  )}
+                  <div className="text-right hidden sm:block">
+                    <p className="text-sm font-medium text-gray-900">{profile?.full_name}</p>
+                    <p className="text-xs text-gray-500">{profile?.email}</p>
+                  </div>
+                  <button
+                    onClick={signOut}
+                    className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition"
+                    title="Sign out"
+                  >
+                    <LogOut className="w-5 h-5" />
+                  </button>
+                </>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => onRequestAuth()}
+                    className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition"
+                  >
+                    Sign In
+                  </button>
+                  <button
+                    onClick={() => onRequestAuth()}
+                    className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition"
+                  >
+                    Sign Up Free
+                  </button>
                 </div>
               )}
-
-              <div className="text-right hidden sm:block">
-                <p className="text-sm font-medium text-gray-900">{profile?.full_name}</p>
-                <p className="text-xs text-gray-500">{profile?.email}</p>
-              </div>
-
-              <button
-                onClick={signOut}
-                className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition"
-                title="Sign out"
-              >
-                <LogOut className="w-5 h-5" />
-              </button>
             </div>
           </div>
         </div>
