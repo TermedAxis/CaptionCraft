@@ -190,7 +190,7 @@ export function Generator({ onRequestAuth }: GeneratorProps) {
   return (
     <div className="max-w-7xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Generate Captions</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Caption Creator</h1>
         <p className="text-gray-600">Create engaging social media captions in seconds</p>
         {profile?.subscription_tier === 'free' && (
           <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-sm">

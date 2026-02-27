@@ -140,7 +140,7 @@ export function ContentPlanner({ onRequestAuth }: ContentPlannerProps) {
   return (
     <div className="max-w-7xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Content Planner</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Content Creator</h1>
         <p className="text-gray-600">Plan and script your social media content with AI</p>
       </div>
 

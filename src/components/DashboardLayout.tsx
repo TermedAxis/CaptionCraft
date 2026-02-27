@@ -17,8 +17,8 @@ export function DashboardLayout({ children, currentPage, onNavigate, onRequestAu
   const isPaid = profile?.subscription_tier === 'paid';
 
   const navItems: { id: NavPage; label: string; icon: React.ElementType }[] = [
-    { id: 'generator', label: 'Generate', icon: Sparkles },
-    { id: 'planner', label: 'Content Planner', icon: LayoutGrid },
+    { id: 'planner', label: 'Content Creator', icon: LayoutGrid },
+    { id: 'generator', label: 'Caption Creator', icon: Sparkles },
     { id: 'saved', label: 'Saved', icon: FileText },
   ];
 
