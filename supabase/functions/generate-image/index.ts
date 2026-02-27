@@ -29,18 +29,25 @@ Deno.serve(async (req: Request) => {
     }
 
     const encodedPrompt = encodeURIComponent(prompt);
-    const seedParam = seed !== undefined ? `&seed=${seed}` : `&seed=${Math.floor(Math.random() * 1000000)}`;
-    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&nologo=true&enhance=true${seedParam}`;
+    const seedValue = seed !== undefined ? seed : Math.floor(Math.random() * 1000000);
+    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&nologo=true&enhance=true&seed=${seedValue}`;
 
     const imageResponse = await fetch(imageUrl);
 
     if (!imageResponse.ok) {
-      throw new Error(`Image generation failed: ${imageResponse.statusText}`);
+      throw new Error(`Upstream image service returned ${imageResponse.status}: ${imageResponse.statusText}`);
     }
 
-    const imageBuffer = await imageResponse.arrayBuffer();
-    const base64 = btoa(String.fromCharCode(...new Uint8Array(imageBuffer)));
     const contentType = imageResponse.headers.get("content-type") || "image/jpeg";
+    const imageBuffer = await imageResponse.arrayBuffer();
+    const bytes = new Uint8Array(imageBuffer);
+
+    let binary = "";
+    const chunkSize = 8192;
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+      binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
+    }
+    const base64 = btoa(binary);
     const dataUrl = `data:${contentType};base64,${base64}`;
 
     return new Response(
