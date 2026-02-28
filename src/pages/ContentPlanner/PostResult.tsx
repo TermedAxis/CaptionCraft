@@ -13,6 +13,19 @@ export function PostResult({ result }: PostResultProps) {
 
   return (
     <div className="space-y-5">
+      <ImageGeneratorPanel
+        imageKey="post-main"
+        defaultPrompt={imagePrompt}
+        imageUrl={images["post-main"]?.imageUrl}
+        loading={loadingKeys["post-main"]}
+        error={errorKeys["post-main"]}
+        onGenerate={generateImage}
+        onClear={clearImage}
+        width={1080}
+        height={1080}
+        label="Post Image"
+      />
+
       <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
         <h3 className="font-semibold text-gray-900 text-base mb-4">{result.title}</h3>
 
@@ -52,19 +65,6 @@ export function PostResult({ result }: PostResultProps) {
           </div>
         </div>
       </div>
-
-      <ImageGeneratorPanel
-        imageKey="post-main"
-        defaultPrompt={imagePrompt}
-        imageUrl={images["post-main"]?.imageUrl}
-        loading={loadingKeys["post-main"]}
-        error={errorKeys["post-main"]}
-        onGenerate={generateImage}
-        onClear={clearImage}
-        width={1080}
-        height={1080}
-        label="Post Image"
-      />
 
       {result.contentTips?.length > 0 && (
         <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
