@@ -13,6 +13,16 @@ interface GenerateImageRequest {
   aspectRatio?: string;
 }
 
+function getDimensions(aspectRatio: string): { width: number; height: number } {
+  switch (aspectRatio) {
+    case "16:9": return { width: 1280, height: 720 };
+    case "9:16": return { width: 720, height: 1280 };
+    case "4:3":  return { width: 1024, height: 768 };
+    case "3:4":  return { width: 768, height: 1024 };
+    default:     return { width: 1024, height: 1024 };
+  }
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 200, headers: corsHeaders });
@@ -22,7 +32,7 @@ Deno.serve(async (req: Request) => {
     const apiKey = Deno.env.get("STABILITY_API_KEY");
     if (!apiKey) {
       return new Response(
-        JSON.stringify({ error: "Stability AI API key not configured" }),
+        JSON.stringify({ error: "API key not configured" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -36,42 +46,53 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const formData = new FormData();
-    formData.append("prompt", prompt);
-    formData.append("aspect_ratio", aspectRatio);
-    formData.append("output_format", "webp");
+    const { width, height } = getDimensions(aspectRatio);
+
+    const payload = {
+      prompt,
+      cfg_scale: 7,
+      aspect_ratio: aspectRatio,
+      seed: 0,
+      steps: 30,
+      negative_prompt: "",
+      width,
+      height,
+    };
 
     const response = await fetch(
-      "https://api.stability.ai/v2beta/stable-image/generate/core",
+      "https://ai.api.nvidia.com/v1/genai/stabilityai/stable-diffusion-xl",
       {
         method: "POST",
         headers: {
           Authorization: `Bearer ${apiKey}`,
-          Accept: "image/*",
+          "Content-Type": "application/json",
+          Accept: "application/json",
         },
-        body: formData,
+        body: JSON.stringify(payload),
       }
     );
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("Stability AI error:", response.status, errorText);
+      console.error("NVIDIA NIM error:", response.status, errorText);
       return new Response(
         JSON.stringify({ error: `Image generation failed: ${response.status}` }),
         { status: response.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const imageBuffer = await response.arrayBuffer();
-    const bytes = new Uint8Array(imageBuffer);
+    const result = await response.json();
 
-    let binary = "";
-    const chunkSize = 8192;
-    for (let i = 0; i < bytes.length; i += chunkSize) {
-      binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
+    const b64 = result?.artifacts?.[0]?.base64 ?? result?.image ?? result?.data?.[0]?.b64_json;
+    if (!b64) {
+      console.error("Unexpected response shape:", JSON.stringify(result));
+      return new Response(
+        JSON.stringify({ error: "No image data in response" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
-    const base64 = btoa(binary);
-    const dataUrl = `data:image/webp;base64,${base64}`;
+
+    const dataUrl = `data:image/png;base64,${b64}`;
 
     return new Response(
       JSON.stringify({ imageUrl: dataUrl }),
