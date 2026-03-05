@@ -58,9 +58,7 @@ export function ScriptForm({ onSubmit, loading, credits }: ScriptFormProps) {
   };
 
   const addUrl = () => {
-    if (inspirationUrls.length < 5) {
-      setInspirationUrls([...inspirationUrls, '']);
-    }
+    if (inspirationUrls.length < 5) setInspirationUrls([...inspirationUrls, '']);
   };
 
   const removeUrl = (index: number) => {
@@ -84,34 +82,24 @@ export function ScriptForm({ onSubmit, loading, credits }: ScriptFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const hasErrors = Object.keys(urlErrors).length > 0;
-    if (hasErrors) return;
-
+    if (Object.keys(urlErrors).length > 0) return;
     const validUrls = inspirationUrls.filter((url) => url.trim() && YOUTUBE_URL_REGEX.test(url));
-
-    onSubmit({
-      platform,
-      topic,
-      targetAudience,
-      length,
-      tone,
-      cta,
-      variations,
-      inspirationUrls: validUrls,
-    });
+    onSubmit({ platform, topic, targetAudience, length, tone, cta, variations, inspirationUrls: validUrls });
   };
 
+  const lengthEntries = Object.entries(LENGTH_LABELS) as [ScriptLength, string][];
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-5">
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">Platform</label>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           {PLATFORMS.map(({ value, label }) => (
             <button
               key={value}
               type="button"
               onClick={() => setPlatform(value)}
-              className={`px-3 py-2.5 rounded-lg text-sm font-medium border transition ${
+              className={`px-3 py-2 rounded-lg text-sm font-medium border transition truncate ${
                 platform === value
                   ? 'bg-blue-600 text-white border-blue-600'
                   : 'bg-white text-gray-700 border-gray-200 hover:border-blue-300 hover:bg-blue-50'
@@ -123,77 +111,78 @@ export function ScriptForm({ onSubmit, loading, credits }: ScriptFormProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Topic <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-            required
-            placeholder="e.g. 10 productivity hacks for remote workers"
-            className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          Topic <span className="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          value={topic}
+          onChange={(e) => setTopic(e.target.value)}
+          required
+          placeholder="e.g. 10 productivity hacks for remote workers"
+          className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
+      </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Target Audience <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            value={targetAudience}
-            onChange={(e) => setTargetAudience(e.target.value)}
-            required
-            placeholder="e.g. Entrepreneurs aged 25–35"
-            className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          Target Audience <span className="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          value={targetAudience}
+          onChange={(e) => setTargetAudience(e.target.value)}
+          required
+          placeholder="e.g. Entrepreneurs aged 25–35"
+          className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
       </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">Script Length</label>
-        <div className="grid grid-cols-1 sm:grid-cols-5 gap-2">
-          {(Object.entries(LENGTH_LABELS) as [ScriptLength, string][]).map(([value, label]) => (
-            <button
-              key={value}
-              type="button"
-              onClick={() => setLength(value)}
-              className={`px-3 py-2.5 rounded-lg text-sm font-medium border transition text-left ${
-                length === value
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-200 hover:border-blue-300 hover:bg-blue-50'
-              }`}
-            >
-              <span className="block">{label.split(' (')[0]}</span>
-              {label.includes('(') && (
-                <span className={`block text-xs mt-0.5 ${length === value ? 'text-blue-100' : 'text-gray-400'}`}>
-                  {label.match(/\(([^)]+)\)/)?.[1]}
-                </span>
-              )}
-            </button>
-          ))}
+        <div className="grid grid-cols-3 gap-2">
+          {lengthEntries.map(([value, label]) => {
+            const [name, range] = label.includes('(') ? label.split(' (') : [label, null];
+            return (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setLength(value)}
+                className={`px-2 py-2 rounded-lg text-xs font-medium border transition text-left ${
+                  length === value
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+                }`}
+              >
+                <span className="block font-semibold leading-tight">{name}</span>
+                {range && (
+                  <span className={`block mt-0.5 leading-tight ${length === value ? 'text-blue-100' : 'text-gray-400'}`}>
+                    {range.replace(')', '')}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">Tone</label>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           {TONES.map(({ value, label, desc }) => (
             <button
               key={value}
               type="button"
               onClick={() => setTone(value)}
-              className={`px-3 py-2.5 rounded-lg text-sm font-medium border transition text-left ${
+              className={`px-3 py-2 rounded-lg text-sm font-medium border transition text-left ${
                 tone === value
                   ? 'bg-blue-600 text-white border-blue-600'
                   : 'bg-white text-gray-700 border-gray-200 hover:border-blue-300 hover:bg-blue-50'
               }`}
             >
-              <span className="block">{label}</span>
-              <span className={`block text-xs mt-0.5 ${tone === value ? 'text-blue-100' : 'text-gray-400'}`}>
+              <span className="block leading-tight">{label}</span>
+              <span className={`block text-xs mt-0.5 leading-tight ${tone === value ? 'text-blue-100' : 'text-gray-400'}`}>
                 {desc}
               </span>
             </button>
@@ -201,49 +190,45 @@ export function ScriptForm({ onSubmit, loading, credits }: ScriptFormProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Call to Action <span className="text-gray-400 font-normal">(optional)</span>
-          </label>
-          <input
-            type="text"
-            value={cta}
-            onChange={(e) => setCta(e.target.value)}
-            placeholder="e.g. Subscribe for more tips"
-            className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          Call to Action <span className="text-gray-400 font-normal text-xs">(optional)</span>
+        </label>
+        <input
+          type="text"
+          value={cta}
+          onChange={(e) => setCta(e.target.value)}
+          placeholder="e.g. Subscribe for more tips"
+          className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
+      </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Variations</label>
-          <div className="flex gap-2">
-            {[1, 2, 3].map((n) => (
-              <button
-                key={n}
-                type="button"
-                onClick={() => setVariations(n)}
-                className={`flex-1 py-2.5 rounded-lg text-sm font-medium border transition ${
-                  variations === n
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white text-gray-700 border-gray-200 hover:border-blue-300 hover:bg-blue-50'
-                }`}
-              >
-                {n}
-              </button>
-            ))}
-          </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Variations</label>
+        <div className="flex gap-2">
+          {[1, 2, 3].map((n) => (
+            <button
+              key={n}
+              type="button"
+              onClick={() => setVariations(n)}
+              className={`flex-1 py-2.5 rounded-lg text-sm font-medium border transition ${
+                variations === n
+                  ? 'bg-blue-600 text-white border-blue-600'
+                  : 'bg-white text-gray-700 border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+              }`}
+            >
+              {n}
+            </button>
+          ))}
         </div>
       </div>
 
       <div>
         <div className="flex items-center justify-between mb-2">
-          <label className="block text-sm font-medium text-gray-700">
-            <span className="flex items-center gap-1.5">
-              <Youtube className="w-4 h-4 text-red-500" />
-              Inspiration Videos
-              <span className="text-gray-400 font-normal">(optional, up to 5)</span>
-            </span>
+          <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
+            <Youtube className="w-4 h-4 text-red-500" />
+            Inspiration Videos
+            <span className="text-gray-400 font-normal text-xs">(optional)</span>
           </label>
           {inspirationUrls.length < 5 && (
             <button
@@ -286,20 +271,18 @@ export function ScriptForm({ onSubmit, loading, credits }: ScriptFormProps) {
           ))}
         </div>
         <p className="text-xs text-gray-400 mt-1.5">
-          AI will use these video transcripts as style inspiration
+          AI uses these transcripts as style inspiration
         </p>
       </div>
 
-      <div className="pt-2 border-t border-gray-100">
+      <div className="pt-3 border-t border-gray-100">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Zap className="w-4 h-4 text-amber-500" />
             <span className="text-sm text-gray-600">
               Cost: <span className="font-semibold text-gray-900">{creditCost} credits</span>
             </span>
-            <span className="text-sm text-gray-400">
-              (Balance: {credits})
-            </span>
+            <span className="text-sm text-gray-400">(Balance: {credits})</span>
           </div>
           {!canAfford && (
             <span className="text-xs text-red-500 font-medium">Insufficient credits</span>

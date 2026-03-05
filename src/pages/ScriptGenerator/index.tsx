@@ -153,8 +153,8 @@ export function ScriptGenerator({ onRequestAuth }: ScriptGeneratorProps) {
         )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-200 p-6 h-fit">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 h-fit">
           <ScriptForm
             onSubmit={handleGenerate}
             loading={loading}
@@ -162,7 +162,7 @@ export function ScriptGenerator({ onRequestAuth }: ScriptGeneratorProps) {
           />
         </div>
 
-        <div className="lg:col-span-3 space-y-4">
+        <div className="space-y-4">
           {error && (
             <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
               {error}
