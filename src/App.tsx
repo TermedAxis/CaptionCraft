@@ -4,10 +4,12 @@ import { Generator } from './pages/Generator';
 import { SavedCaptions } from './pages/SavedCaptions';
 import { Upgrade } from './pages/Upgrade';
 import { ContentPlanner } from './pages/ContentPlanner';
+import { ScriptGenerator } from './pages/ScriptGenerator';
+import { ThumbnailGenerator } from './pages/ThumbnailGenerator';
 import { DashboardLayout } from './components/DashboardLayout';
 import { AuthModal } from './components/AuthModal';
 
-type Page = 'generator' | 'saved' | 'planner';
+type Page = 'generator' | 'saved' | 'planner' | 'script' | 'thumbnail';
 
 function AppContent() {
   const [page, setPage] = useState<Page>('generator');
@@ -20,6 +22,16 @@ function AppContent() {
     setShowAuthModal(true);
   };
 
+  const renderPage = () => {
+    switch (page) {
+      case 'saved': return <SavedCaptions onRequestAuth={requestAuth} />;
+      case 'planner': return <ContentPlanner onRequestAuth={requestAuth} />;
+      case 'script': return <ScriptGenerator onRequestAuth={requestAuth} />;
+      case 'thumbnail': return <ThumbnailGenerator onRequestAuth={requestAuth} />;
+      default: return <Generator onRequestAuth={requestAuth} />;
+    }
+  };
+
   return (
     <>
       <DashboardLayout
@@ -27,13 +39,7 @@ function AppContent() {
         onNavigate={setPage}
         onRequestAuth={requestAuth}
       >
-        {page === 'saved' ? (
-          <SavedCaptions onRequestAuth={requestAuth} />
-        ) : page === 'planner' ? (
-          <ContentPlanner onRequestAuth={requestAuth} />
-        ) : (
-          <Generator onRequestAuth={requestAuth} />
-        )}
+        {renderPage()}
       </DashboardLayout>
 
       {showUpgrade && <Upgrade onClose={() => setShowUpgrade(false)} />}

@@ -14,12 +14,40 @@ export type Profile = {
   email: string;
   full_name: string | null;
   subscription_tier: 'free' | 'paid';
+  credits: number;
   stripe_customer_id: string | null;
   stripe_subscription_id: string | null;
   subscription_status: string | null;
   subscription_ends_at: string | null;
   created_at: string;
   updated_at: string;
+};
+
+export type Script = {
+  id: string;
+  user_id: string;
+  platform: string;
+  topic: string;
+  target_audience: string;
+  tone: string;
+  length: string;
+  cta: string;
+  variations: object[];
+  credits_used: number;
+  created_at: string;
+};
+
+export type Thumbnail = {
+  id: string;
+  user_id: string;
+  topic: string;
+  style: string;
+  emotion: string;
+  color_theme: string;
+  text_overlay: string;
+  image_urls: string[];
+  credits_used: number;
+  created_at: string;
 };
 
 export type Caption = {

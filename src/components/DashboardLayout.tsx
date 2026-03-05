@@ -1,8 +1,8 @@
 import { ReactNode } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Sparkles, FileText, LogOut, Crown, LayoutGrid } from 'lucide-react';
+import { Sparkles, FileText, LogOut, Crown, LayoutGrid, ScrollText, ImageIcon, Zap } from 'lucide-react';
 
-type NavPage = 'generator' | 'saved' | 'planner';
+type NavPage = 'generator' | 'saved' | 'planner' | 'script' | 'thumbnail';
 
 type DashboardLayoutProps = {
   children: ReactNode;
@@ -11,20 +11,31 @@ type DashboardLayoutProps = {
   onRequestAuth: (message?: string) => void;
 };
 
+const AUTH_REQUIRED_PAGES: NavPage[] = ['saved', 'script', 'thumbnail'];
+
+const AUTH_MESSAGES: Partial<Record<NavPage, string>> = {
+  saved: 'Sign in to view your saved captions',
+  script: 'Sign in to use the Script Generator',
+  thumbnail: 'Sign in to use the Thumbnail Generator',
+};
+
 export function DashboardLayout({ children, currentPage, onNavigate, onRequestAuth }: DashboardLayoutProps) {
   const { user, signOut, profile } = useAuth();
 
   const isPaid = profile?.subscription_tier === 'paid';
+  const credits = profile?.credits ?? 0;
 
   const navItems: { id: NavPage; label: string; icon: React.ElementType }[] = [
     { id: 'planner', label: 'Content Creator', icon: LayoutGrid },
     { id: 'generator', label: 'Caption Creator', icon: Sparkles },
+    { id: 'script', label: 'Script Generator', icon: ScrollText },
+    { id: 'thumbnail', label: 'Thumbnail Generator', icon: ImageIcon },
     { id: 'saved', label: 'Saved', icon: FileText },
   ];
 
   const handleNavClick = (id: NavPage) => {
-    if (id === 'saved' && !user) {
-      onRequestAuth('Sign in to view your saved captions');
+    if (AUTH_REQUIRED_PAGES.includes(id) && !user) {
+      onRequestAuth(AUTH_MESSAGES[id]);
       return;
     }
     onNavigate(id);
@@ -68,6 +79,11 @@ export function DashboardLayout({ children, currentPage, onNavigate, onRequestAu
                       <span className="text-sm font-semibold text-white">Pro</span>
                     </div>
                   )}
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-lg">
+                    <Zap className="w-3.5 h-3.5 text-amber-500" />
+                    <span className="text-sm font-semibold text-amber-700">{credits}</span>
+                    <span className="text-xs text-amber-500 hidden sm:inline">credits</span>
+                  </div>
                   <div className="text-right hidden sm:block">
                     <p className="text-sm font-medium text-gray-900">{profile?.full_name}</p>
                     <p className="text-xs text-gray-500">{profile?.email}</p>
