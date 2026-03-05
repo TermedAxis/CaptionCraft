@@ -134,8 +134,8 @@ export function ScriptGenerator({ onRequestAuth }: ScriptGeneratorProps) {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
+    <div className="max-w-6xl mx-auto">
+      <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <div className="p-2.5 bg-blue-100 rounded-xl">
             <ScrollText className="w-6 h-6 text-blue-600" />
@@ -153,7 +153,7 @@ export function ScriptGenerator({ onRequestAuth }: ScriptGeneratorProps) {
         )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6 items-start">
         <div className="bg-white rounded-2xl border border-gray-200 p-6 h-fit">
           <ScriptForm
             onSubmit={handleGenerate}

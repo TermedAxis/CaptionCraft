@@ -141,7 +141,7 @@ export function ScriptForm({ onSubmit, loading, credits }: ScriptFormProps) {
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">Script Length</label>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           {lengthEntries.map(([value, label]) => {
             const [name, range] = label.includes('(') ? label.split(' (') : [label, null];
             return (
@@ -149,7 +149,7 @@ export function ScriptForm({ onSubmit, loading, credits }: ScriptFormProps) {
                 key={value}
                 type="button"
                 onClick={() => setLength(value)}
-                className={`px-2 py-2 rounded-lg text-xs font-medium border transition text-left ${
+                className={`px-3 py-2.5 rounded-lg text-sm font-medium border transition text-left ${
                   length === value
                     ? 'bg-blue-600 text-white border-blue-600'
                     : 'bg-white text-gray-700 border-gray-200 hover:border-blue-300 hover:bg-blue-50'
@@ -157,7 +157,7 @@ export function ScriptForm({ onSubmit, loading, credits }: ScriptFormProps) {
               >
                 <span className="block font-semibold leading-tight">{name}</span>
                 {range && (
-                  <span className={`block mt-0.5 leading-tight ${length === value ? 'text-blue-100' : 'text-gray-400'}`}>
+                  <span className={`block text-xs mt-0.5 leading-tight ${length === value ? 'text-blue-100' : 'text-gray-400'}`}>
                     {range.replace(')', '')}
                   </span>
                 )}

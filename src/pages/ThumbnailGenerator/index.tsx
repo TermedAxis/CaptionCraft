@@ -111,8 +111,8 @@ export function ThumbnailGenerator({ onRequestAuth }: ThumbnailGeneratorProps) {
   };
 
   return (
-    <div className="max-w-5xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
+    <div className="max-w-6xl mx-auto">
+      <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <div className="p-2.5 bg-blue-100 rounded-xl">
             <ImageIcon className="w-6 h-6 text-blue-600" />
@@ -130,8 +130,8 @@ export function ThumbnailGenerator({ onRequestAuth }: ThumbnailGeneratorProps) {
         )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-200 p-6 h-fit">
+      <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6 items-start">
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 h-fit">
           <ThumbnailForm
             onSubmit={handleGenerate}
             loading={loading}
@@ -139,7 +139,7 @@ export function ThumbnailGenerator({ onRequestAuth }: ThumbnailGeneratorProps) {
           />
         </div>
 
-        <div className="lg:col-span-3 space-y-4">
+        <div className="space-y-4">
           {error && (
             <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
               {error}
