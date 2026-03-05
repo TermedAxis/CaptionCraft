@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ImageIcon, Zap } from 'lucide-react';
+import { Image as ImageIcon, Zap } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCredits } from '../../hooks/useCredits';
 import { supabase } from '../../lib/supabase';

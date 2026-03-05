@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Sparkles, FileText, LogOut, Crown, LayoutGrid, ScrollText, ImageIcon, Zap } from 'lucide-react';
+import { Sparkles, FileText, LogOut, Crown, LayoutGrid, ScrollText, Image as ImageIcon, Zap } from 'lucide-react';
 
 type NavPage = 'generator' | 'saved' | 'planner' | 'script' | 'thumbnail';
 
