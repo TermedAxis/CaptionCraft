@@ -46,17 +46,14 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const { width, height } = getDimensions(aspectRatio);
-
     const payload = {
-      prompt,
-      cfg_scale: 7,
-      aspect_ratio: aspectRatio,
+      text_prompts: [
+        { text: prompt, weight: 1 },
+      ],
+      cfg_scale: 5,
+      sampler: "K_DPM_2_ANCESTRAL",
       seed: 0,
-      steps: 30,
-      negative_prompt: "",
-      width,
-      height,
+      steps: 25,
     };
 
     const response = await fetch(
