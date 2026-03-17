@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Sparkles, FileText, LogOut, Crown, LayoutGrid, ScrollText, Image as ImageIcon, Zap } from 'lucide-react';
+import { Sparkles, FileText, LogOut, Crown, LayoutGrid, ScrollText, Image as ImageIcon, Zap, Star, TrendingUp } from 'lucide-react';
 
 type NavPage = 'generator' | 'saved' | 'planner' | 'script' | 'thumbnail';
 
@@ -9,6 +9,8 @@ type DashboardLayoutProps = {
   currentPage: NavPage;
   onNavigate: (page: NavPage) => void;
   onRequestAuth: (message?: string) => void;
+  onUpgrade: () => void;
+  onBuyCredits: () => void;
 };
 
 const AUTH_REQUIRED_PAGES: NavPage[] = ['saved', 'script', 'thumbnail'];
@@ -19,11 +21,18 @@ const AUTH_MESSAGES: Partial<Record<NavPage, string>> = {
   thumbnail: 'Sign in to use the Thumbnail Generator',
 };
 
-export function DashboardLayout({ children, currentPage, onNavigate, onRequestAuth }: DashboardLayoutProps) {
+const PLAN_CONFIG = {
+  free: { label: 'Free', icon: null, className: '' },
+  hobby: { label: 'Hobby', icon: Star, className: 'bg-blue-600 text-white' },
+  pro: { label: 'Pro', icon: Crown, className: 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' },
+};
+
+export function DashboardLayout({ children, currentPage, onNavigate, onRequestAuth, onUpgrade, onBuyCredits }: DashboardLayoutProps) {
   const { user, signOut, profile } = useAuth();
 
-  const isPaid = profile?.subscription_tier === 'paid';
-  const credits = profile?.credits ?? 0;
+  const plan = profile?.plan_type ?? 'free';
+  const credits = profile?.credits_remaining ?? 0;
+  const planConfig = PLAN_CONFIG[plan];
 
   const navItems: { id: NavPage; label: string; icon: React.ElementType }[] = [
     { id: 'planner', label: 'Content Creator', icon: LayoutGrid },
@@ -70,20 +79,41 @@ export function DashboardLayout({ children, currentPage, onNavigate, onRequestAu
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               {user ? (
                 <>
-                  {isPaid && (
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-lg">
-                      <Crown className="w-4 h-4 text-white" />
-                      <span className="text-sm font-semibold text-white">Pro</span>
+                  {plan !== 'free' && planConfig.icon && (
+                    <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold ${planConfig.className}`}>
+                      <planConfig.icon className="w-3.5 h-3.5" />
+                      {planConfig.label}
                     </div>
                   )}
-                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-lg">
-                    <Zap className="w-3.5 h-3.5 text-amber-500" />
-                    <span className="text-sm font-semibold text-amber-700">{credits}</span>
-                    <span className="text-xs text-amber-500 hidden sm:inline">credits</span>
-                  </div>
+
+                  {plan === 'free' ? (
+                    <button
+                      onClick={onUpgrade}
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition"
+                    >
+                      <Zap className="w-3.5 h-3.5" />
+                      Upgrade
+                    </button>
+                  ) : (
+                    <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-lg">
+                        <Zap className="w-3.5 h-3.5 text-amber-500" />
+                        <span className="text-sm font-semibold text-amber-700">{credits.toLocaleString()}</span>
+                        <span className="text-xs text-amber-500 hidden sm:inline">cr</span>
+                      </div>
+                      <button
+                        onClick={onBuyCredits}
+                        title="Buy more credits"
+                        className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                      >
+                        <TrendingUp className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
+
                   <div className="text-right hidden sm:block">
                     <p className="text-sm font-medium text-gray-900">{profile?.full_name}</p>
                     <p className="text-xs text-gray-500">{profile?.email}</p>

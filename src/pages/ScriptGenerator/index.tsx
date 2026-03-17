@@ -1,27 +1,48 @@
-import { useState } from 'react';
-import { ScrollText, Zap } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ScrollText, Zap, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCredits } from '../../hooks/useCredits';
 import { supabase } from '../../lib/supabase';
+import { ModelId } from '../../lib/supabase';
 import { ScriptForm } from './ScriptForm';
 import { ScriptResult } from './ScriptResult';
-import { ScriptFormValues, ScriptVariation, ScriptLength, CREDIT_COSTS } from './types';
+import { ScriptFormValues, ScriptVariation, ScriptLength } from './types';
+import { getCreditCost, FREE_LIMITS } from '../../lib/credits';
 
 interface ScriptGeneratorProps {
   onRequestAuth: (message?: string) => void;
+  onUpgrade: () => void;
 }
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export function ScriptGenerator({ onRequestAuth }: ScriptGeneratorProps) {
+export function ScriptGenerator({ onRequestAuth, onUpgrade }: ScriptGeneratorProps) {
   const { user, profile } = useAuth();
-  const { credits, hasEnoughCredits, deductCredits } = useCredits();
+  const { plan, credits, checkFreeLimit, consumeGeneration } = useCredits();
+
   const [loading, setLoading] = useState(false);
   const [cuttingDown, setCuttingDown] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [variations, setVariations] = useState<ScriptVariation[]>([]);
   const [lastFormValues, setLastFormValues] = useState<ScriptFormValues | null>(null);
+  const [selectedModel, setSelectedModel] = useState<ModelId>('base');
+  const [freeUsed, setFreeUsed] = useState(0);
+  const [freeChecked, setFreeChecked] = useState(false);
+
+  useEffect(() => {
+    if (user && plan === 'free') {
+      checkFreeLimit('script').then(({ used }) => {
+        setFreeUsed(used);
+        setFreeChecked(true);
+      });
+    } else {
+      setFreeChecked(true);
+    }
+  }, [user, plan]);
+
+  const freeLimit = FREE_LIMITS.script;
+  const freeLimitReached = plan === 'free' && freeChecked && freeUsed >= freeLimit;
 
   const handleGenerate = async (values: ScriptFormValues) => {
     if (!user) {
@@ -29,10 +50,19 @@ export function ScriptGenerator({ onRequestAuth }: ScriptGeneratorProps) {
       return;
     }
 
-    const cost = CREDIT_COSTS[values.length] * values.variations;
-    if (!hasEnoughCredits(cost)) {
-      setError(`Not enough credits. You need ${cost} credits but have ${credits}.`);
-      return;
+    if (plan === 'free') {
+      const { allowed, used } = await checkFreeLimit('script');
+      setFreeUsed(used);
+      if (!allowed) {
+        onUpgrade();
+        return;
+      }
+    } else {
+      const cost = getCreditCost('script', selectedModel) * values.variations;
+      if (credits < cost) {
+        setError(`Not enough credits. You need ${cost} but have ${credits}.`);
+        return;
+      }
     }
 
     setLoading(true);
@@ -56,24 +86,21 @@ export function ScriptGenerator({ onRequestAuth }: ScriptGeneratorProps) {
           variations: values.variations,
           inspirationUrls: values.inspirationUrls,
           extraContext: values.extraContext || undefined,
+          model: selectedModel,
         }),
       });
 
       const data = await response.json();
-
-      if (!response.ok || data.error) {
-        throw new Error(data.error || 'Failed to generate script');
-      }
+      if (!response.ok || data.error) throw new Error(data.error || 'Failed to generate script');
 
       const generatedVariations: ScriptVariation[] = data.variations;
       setVariations(generatedVariations);
 
-      const deducted = await deductCredits(cost);
-      if (!deducted) {
-        console.warn('Credit deduction failed silently');
-      }
+      await consumeGeneration('script', selectedModel);
+      if (plan === 'free') setFreeUsed((prev) => prev + 1);
 
       if (profile) {
+        const cost = plan === 'free' ? 0 : getCreditCost('script', selectedModel) * values.variations;
         await supabase.from('scripts').insert({
           user_id: profile.id,
           platform: values.platform,
@@ -95,10 +122,8 @@ export function ScriptGenerator({ onRequestAuth }: ScriptGeneratorProps) {
 
   const handleCutDown = async (script: ScriptVariation, targetLength: ScriptLength) => {
     if (!user) return;
-
     setCuttingDown(true);
     setError(null);
-
     try {
       const response = await fetch(`${SUPABASE_URL}/functions/v1/generate-script`, {
         method: 'POST',
@@ -117,16 +142,10 @@ export function ScriptGenerator({ onRequestAuth }: ScriptGeneratorProps) {
           variations: 1,
         }),
       });
-
       const data = await response.json();
-      if (!response.ok || data.error) {
-        throw new Error(data.error || 'Failed to cut down script');
-      }
-
+      if (!response.ok || data.error) throw new Error(data.error || 'Failed to cut down script');
       const cutVariation: ScriptVariation = data.variations[0];
-      setVariations((prev) =>
-        prev.map((v) => (v === script ? cutVariation : v))
-      );
+      setVariations((prev) => prev.map((v) => (v === script ? cutVariation : v)));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to cut down script');
     } finally {
@@ -146,10 +165,21 @@ export function ScriptGenerator({ onRequestAuth }: ScriptGeneratorProps) {
             <p className="text-sm text-gray-500">Generate video scripts for any platform</p>
           </div>
         </div>
-        {user && (
+        {user && plan === 'free' && freeChecked && (
+          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm ${
+            freeLimitReached ? 'bg-red-50 text-red-700' : 'bg-blue-50 text-blue-700'
+          }`}>
+            <AlertCircle className="w-4 h-4" />
+            <span>Free: {freeUsed}/{freeLimit} scripts used</span>
+            {freeLimitReached && (
+              <button onClick={onUpgrade} className="underline font-semibold">Upgrade</button>
+            )}
+          </div>
+        )}
+        {user && plan !== 'free' && (
           <div className="flex items-center gap-1.5 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
             <Zap className="w-4 h-4 text-amber-500" />
-            <span className="text-sm font-semibold text-amber-700">{credits} credits</span>
+            <span className="text-sm font-semibold text-amber-700">{credits.toLocaleString()} credits</span>
           </div>
         )}
       </div>
@@ -160,12 +190,18 @@ export function ScriptGenerator({ onRequestAuth }: ScriptGeneratorProps) {
             onSubmit={handleGenerate}
             loading={loading}
             credits={credits}
+            plan={plan}
+            selectedModel={selectedModel}
+            onModelChange={setSelectedModel}
+            onUpgrade={onUpgrade}
+            freeLimitReached={freeLimitReached}
           />
         </div>
 
         <div className="space-y-4">
           {error && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
+            <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
               {error}
             </div>
           )}
@@ -182,11 +218,7 @@ export function ScriptGenerator({ onRequestAuth }: ScriptGeneratorProps) {
           )}
 
           {!loading && variations.length > 0 && (
-            <ScriptResult
-              variations={variations}
-              onCutDown={handleCutDown}
-              cuttingDown={cuttingDown}
-            />
+            <ScriptResult variations={variations} onCutDown={handleCutDown} cuttingDown={cuttingDown} />
           )}
 
           {!loading && variations.length === 0 && !error && (

@@ -1,26 +1,48 @@
-import { useState } from 'react';
-import { Image as ImageIcon, Zap } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Image as ImageIcon, Zap, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCredits } from '../../hooks/useCredits';
 import { supabase } from '../../lib/supabase';
+import { ModelId } from '../../lib/supabase';
 import { ThumbnailForm } from './ThumbnailForm';
 import { ThumbnailResult } from './ThumbnailResult';
-import { ThumbnailFormValues, THUMBNAIL_CREDIT_COST } from './types';
+import { ThumbnailFormValues } from './types';
+import { getCreditCost, FREE_LIMITS } from '../../lib/credits';
 
 interface ThumbnailGeneratorProps {
   onRequestAuth: (message?: string) => void;
+  onUpgrade: () => void;
 }
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export function ThumbnailGenerator({ onRequestAuth }: ThumbnailGeneratorProps) {
+export function ThumbnailGenerator({ onRequestAuth, onUpgrade }: ThumbnailGeneratorProps) {
   const { user, profile } = useAuth();
-  const { credits, hasEnoughCredits, deductCredits } = useCredits();
+  const { plan, credits, checkFreeLimit, consumeGeneration } = useCredits();
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [lastFormValues, setLastFormValues] = useState<ThumbnailFormValues | null>(null);
+  const [selectedModel, setSelectedModel] = useState<ModelId>('base-image');
+  const [freeUsed, setFreeUsed] = useState(0);
+  const [freeChecked, setFreeChecked] = useState(false);
+
+  useEffect(() => {
+    if (user && plan === 'free') {
+      checkFreeLimit('thumbnail').then(({ used }) => {
+        setFreeUsed(used);
+        setFreeChecked(true);
+      });
+    } else {
+      setFreeChecked(true);
+    }
+  }, [user, plan]);
+
+  const freeLimit = FREE_LIMITS.thumbnail;
+  const freeLimitReached = plan === 'free' && freeChecked && freeUsed >= freeLimit;
+  const creditCost = plan !== 'free' ? getCreditCost('thumbnail', selectedModel) : 0;
 
   const callGenerate = async (values: ThumbnailFormValues): Promise<string[]> => {
     const response = await fetch(`${SUPABASE_URL}/functions/v1/generate-thumbnail`, {
@@ -38,15 +60,11 @@ export function ThumbnailGenerator({ onRequestAuth }: ThumbnailGeneratorProps) {
         extraContext: values.extraContext || undefined,
         inspirationUrls: values.inspirationUrls,
         inspirationImages: values.inspirationImages,
+        model: selectedModel,
       }),
     });
-
     const data = await response.json();
-
-    if (!response.ok || data.error) {
-      throw new Error(data.error || 'Failed to generate thumbnails');
-    }
-
+    if (!response.ok || data.error) throw new Error(data.error || 'Failed to generate thumbnails');
     return data.imageUrls;
   };
 
@@ -56,8 +74,15 @@ export function ThumbnailGenerator({ onRequestAuth }: ThumbnailGeneratorProps) {
       return;
     }
 
-    if (!hasEnoughCredits(THUMBNAIL_CREDIT_COST)) {
-      setError(`Not enough credits. You need ${THUMBNAIL_CREDIT_COST} credits but have ${credits}.`);
+    if (plan === 'free') {
+      const { allowed, used } = await checkFreeLimit('thumbnail');
+      setFreeUsed(used);
+      if (!allowed) {
+        onUpgrade();
+        return;
+      }
+    } else if (credits < creditCost) {
+      setError(`Not enough credits. You need ${creditCost} but have ${credits}.`);
       return;
     }
 
@@ -69,7 +94,8 @@ export function ThumbnailGenerator({ onRequestAuth }: ThumbnailGeneratorProps) {
       const urls = await callGenerate(values);
       setImageUrls(urls);
 
-      await deductCredits(THUMBNAIL_CREDIT_COST);
+      await consumeGeneration('thumbnail', selectedModel);
+      if (plan === 'free') setFreeUsed((prev) => prev + 1);
 
       if (profile) {
         await supabase.from('thumbnails').insert({
@@ -80,7 +106,7 @@ export function ThumbnailGenerator({ onRequestAuth }: ThumbnailGeneratorProps) {
           color_theme: values.colorTheme,
           text_overlay: values.textOverlay,
           image_urls: urls,
-          credits_used: THUMBNAIL_CREDIT_COST,
+          credits_used: creditCost,
         });
       }
     } catch (err) {
@@ -92,18 +118,16 @@ export function ThumbnailGenerator({ onRequestAuth }: ThumbnailGeneratorProps) {
 
   const handleRegenerate = async () => {
     if (!lastFormValues) return;
-    if (!hasEnoughCredits(THUMBNAIL_CREDIT_COST)) {
-      setError(`Not enough credits. You need ${THUMBNAIL_CREDIT_COST} credits but have ${credits}.`);
+    if (plan !== 'free' && credits < creditCost) {
+      setError(`Not enough credits. You need ${creditCost} but have ${credits}.`);
       return;
     }
-
     setLoading(true);
     setError(null);
-
     try {
       const urls = await callGenerate(lastFormValues);
       setImageUrls(urls);
-      await deductCredits(THUMBNAIL_CREDIT_COST);
+      await consumeGeneration('thumbnail', selectedModel);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
@@ -123,10 +147,21 @@ export function ThumbnailGenerator({ onRequestAuth }: ThumbnailGeneratorProps) {
             <p className="text-sm text-gray-500">Generate YouTube thumbnails that get clicks</p>
           </div>
         </div>
-        {user && (
+        {user && plan === 'free' && freeChecked && (
+          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm ${
+            freeLimitReached ? 'bg-red-50 text-red-700' : 'bg-blue-50 text-blue-700'
+          }`}>
+            <AlertCircle className="w-4 h-4" />
+            <span>Free: {freeUsed}/{freeLimit} thumbnail used</span>
+            {freeLimitReached && (
+              <button onClick={onUpgrade} className="underline font-semibold">Upgrade</button>
+            )}
+          </div>
+        )}
+        {user && plan !== 'free' && (
           <div className="flex items-center gap-1.5 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
             <Zap className="w-4 h-4 text-amber-500" />
-            <span className="text-sm font-semibold text-amber-700">{credits} credits</span>
+            <span className="text-sm font-semibold text-amber-700">{credits.toLocaleString()} credits</span>
           </div>
         )}
       </div>
@@ -137,12 +172,18 @@ export function ThumbnailGenerator({ onRequestAuth }: ThumbnailGeneratorProps) {
             onSubmit={handleGenerate}
             loading={loading}
             credits={credits}
+            plan={plan}
+            selectedModel={selectedModel}
+            onModelChange={setSelectedModel}
+            onUpgrade={onUpgrade}
+            freeLimitReached={freeLimitReached}
           />
         </div>
 
         <div className="space-y-4">
           {error && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
+            <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
               {error}
             </div>
           )}
@@ -160,11 +201,7 @@ export function ThumbnailGenerator({ onRequestAuth }: ThumbnailGeneratorProps) {
 
           {!loading && imageUrls.length > 0 && (
             <div className="bg-white rounded-2xl border border-gray-200 p-6">
-              <ThumbnailResult
-                imageUrls={imageUrls}
-                onRegenerate={handleRegenerate}
-                loading={loading}
-              />
+              <ThumbnailResult imageUrls={imageUrls} onRegenerate={handleRegenerate} loading={loading} />
             </div>
           )}
 

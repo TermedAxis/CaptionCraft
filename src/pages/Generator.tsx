@@ -1,7 +1,11 @@
-import { useState, KeyboardEvent } from 'react';
+import { useState, useEffect, KeyboardEvent } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { Sparkles, Copy, Check, AlertCircle, Loader2, Hash, X } from 'lucide-react';
+import { useCredits } from '../hooks/useCredits';
+import { ModelSelector } from '../components/ModelSelector';
+import { Sparkles, Copy, Check, AlertCircle, Loader2, Hash, X, Zap } from 'lucide-react';
+import { ModelId } from '../lib/supabase';
+import { getCreditCost, FREE_LIMITS } from '../lib/credits';
 
 type CaptionVariation = {
   version: string;
@@ -9,14 +13,15 @@ type CaptionVariation = {
   hashtags: string;
 };
 
-const FREE_TIER_DAILY_LIMIT = 5;
-
 interface GeneratorProps {
   onRequestAuth: (message?: string) => void;
+  onUpgrade: () => void;
 }
 
-export function Generator({ onRequestAuth }: GeneratorProps) {
+export function Generator({ onRequestAuth, onUpgrade }: GeneratorProps) {
   const { user, profile } = useAuth();
+  const { plan, credits, checkFreeLimit, consumeGeneration } = useCredits();
+
   const [platform, setPlatform] = useState('instagram');
   const [contentType, setContentType] = useState('post');
   const [topic, setTopic] = useState('');
@@ -28,66 +33,47 @@ export function Generator({ onRequestAuth }: GeneratorProps) {
   const [includeHashtags, setIncludeHashtags] = useState(true);
   const [customHashtags, setCustomHashtags] = useState<string[]>([]);
   const [hashtagInput, setHashtagInput] = useState('');
+  const [selectedModel, setSelectedModel] = useState<ModelId>('base');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [variations, setVariations] = useState<CaptionVariation[]>([]);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-  const [dailyUsage, setDailyUsage] = useState(0);
+  const [freeUsed, setFreeUsed] = useState(0);
+  const [freeChecked, setFreeChecked] = useState(false);
 
-  const checkDailyUsage = async () => {
-    if (!profile || profile.subscription_tier === 'paid') return true;
-
-    const today = new Date().toISOString().split('T')[0];
-    const { data } = await supabase
-      .from('usage_tracking')
-      .select('caption_count')
-      .eq('user_id', profile.id)
-      .eq('date', today)
-      .maybeSingle();
-
-    const count = data?.caption_count || 0;
-    setDailyUsage(count);
-
-    if (count >= FREE_TIER_DAILY_LIMIT) {
-      setError(`Free tier limit reached (${FREE_TIER_DAILY_LIMIT} captions/day). Upgrade to Pro for unlimited generations.`);
-      return false;
-    }
-
-    return true;
-  };
-
-  const updateUsageTracking = async () => {
-    if (!profile) return;
-
-    const today = new Date().toISOString().split('T')[0];
-    const { data: existing } = await supabase
-      .from('usage_tracking')
-      .select('*')
-      .eq('user_id', profile.id)
-      .eq('date', today)
-      .maybeSingle();
-
-    if (existing) {
-      await supabase
-        .from('usage_tracking')
-        .update({ caption_count: existing.caption_count + 1 })
-        .eq('id', existing.id);
+  useEffect(() => {
+    if (user && plan === 'free') {
+      checkFreeLimit('caption').then(({ used }) => {
+        setFreeUsed(used);
+        setFreeChecked(true);
+      });
     } else {
-      await supabase
-        .from('usage_tracking')
-        .insert({
-          user_id: profile.id,
-          date: today,
-          caption_count: 1,
-        });
+      setFreeChecked(true);
     }
-  };
+  }, [user, plan]);
+
+  const creditCost = plan !== 'free' ? getCreditCost('caption', selectedModel) : 0;
+  const freeLimit = FREE_LIMITS.caption;
+  const freeLimitReached = plan === 'free' && freeChecked && freeUsed >= freeLimit;
+  const canAfford = plan === 'free' ? !freeLimitReached : credits >= creditCost;
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!user) {
-      onRequestAuth("Sign in to generate captions");
+      onRequestAuth('Sign in to generate captions');
+      return;
+    }
+
+    if (plan === 'free') {
+      const { allowed, used } = await checkFreeLimit('caption');
+      setFreeUsed(used);
+      if (!allowed) {
+        onUpgrade();
+        return;
+      }
+    } else if (credits < creditCost) {
+      setError(`Not enough credits. You need ${creditCost} but have ${credits}.`);
       return;
     }
 
@@ -96,17 +82,11 @@ export function Generator({ onRequestAuth }: GeneratorProps) {
     setLoading(true);
 
     try {
-      const canGenerate = await checkDailyUsage();
-      if (!canGenerate) {
-        setLoading(false);
-        return;
-      }
-
       const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-caption`;
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -120,17 +100,16 @@ export function Generator({ onRequestAuth }: GeneratorProps) {
           emojiLevel,
           includeHashtags,
           customHashtags: customHashtags.length > 0 ? customHashtags : undefined,
+          model: selectedModel,
         }),
       });
 
       const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Failed to generate captions');
 
-      if (!response.ok) {
-        throw new Error(result.error || 'Failed to generate captions');
-      }
       setVariations(result.variations);
-      await updateUsageTracking();
-      setDailyUsage(dailyUsage + 1);
+      await consumeGeneration('caption', selectedModel);
+      if (plan === 'free') setFreeUsed((prev) => prev + 1);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate captions');
     } finally {
@@ -140,10 +119,9 @@ export function Generator({ onRequestAuth }: GeneratorProps) {
 
   const handleSave = async (variation: CaptionVariation) => {
     if (!user || !profile) {
-      onRequestAuth("Sign in to save captions");
+      onRequestAuth('Sign in to save captions');
       return;
     }
-
     try {
       await supabase.from('captions').insert({
         user_id: profile.id,
@@ -154,9 +132,8 @@ export function Generator({ onRequestAuth }: GeneratorProps) {
         caption_text: variation.caption,
         hashtags: variation.hashtags,
       });
-
       alert('Caption saved successfully!');
-    } catch (err) {
+    } catch {
       alert('Failed to save caption');
     }
   };
@@ -192,10 +169,19 @@ export function Generator({ onRequestAuth }: GeneratorProps) {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Caption Creator</h1>
         <p className="text-gray-600">Create engaging social media captions in seconds</p>
-        {profile?.subscription_tier === 'free' && (
-          <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-sm">
+        {plan === 'free' && freeChecked && (
+          <div className={`mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm ${
+            freeLimitReached ? 'bg-red-50 text-red-700' : 'bg-blue-50 text-blue-700'
+          }`}>
             <AlertCircle className="w-4 h-4" />
-            <span>Free tier: {dailyUsage}/{FREE_TIER_DAILY_LIMIT} captions used today</span>
+            <span>
+              Free: {freeUsed}/{freeLimit} captions used
+              {freeLimitReached && (
+                <button onClick={onUpgrade} className="underline font-semibold ml-1">
+                  Upgrade to continue
+                </button>
+              )}
+            </span>
           </div>
         )}
       </div>
@@ -205,9 +191,7 @@ export function Generator({ onRequestAuth }: GeneratorProps) {
           <form onSubmit={handleGenerate} className="space-y-5">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Platform
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Platform</label>
                 <select
                   value={platform}
                   onChange={(e) => setPlatform(e.target.value)}
@@ -220,11 +204,8 @@ export function Generator({ onRequestAuth }: GeneratorProps) {
                   <option value="youtube">YouTube Shorts</option>
                 </select>
               </div>
-
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Content Type
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Content Type</label>
                 <select
                   value={contentType}
                   onChange={(e) => setContentType(e.target.value)}
@@ -239,9 +220,7 @@ export function Generator({ onRequestAuth }: GeneratorProps) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Topic / Context *
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Topic / Context *</label>
               <textarea
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
@@ -253,9 +232,7 @@ export function Generator({ onRequestAuth }: GeneratorProps) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Hook (Optional)
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Hook (Optional)</label>
               <input
                 type="text"
                 value={hook}
@@ -266,9 +243,7 @@ export function Generator({ onRequestAuth }: GeneratorProps) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Target Audience (Optional)
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Target Audience (Optional)</label>
               <input
                 type="text"
                 value={targetAudience}
@@ -280,9 +255,7 @@ export function Generator({ onRequestAuth }: GeneratorProps) {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Tone
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Tone</label>
                 <select
                   value={tone}
                   onChange={(e) => setTone(e.target.value)}
@@ -296,11 +269,8 @@ export function Generator({ onRequestAuth }: GeneratorProps) {
                   <option value="educational">Educational</option>
                 </select>
               </div>
-
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Emoji Level
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Emoji Level</label>
                 <select
                   value={emojiLevel}
                   onChange={(e) => setEmojiLevel(e.target.value)}
@@ -315,9 +285,7 @@ export function Generator({ onRequestAuth }: GeneratorProps) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Call-to-Action (Optional)
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Call-to-Action (Optional)</label>
               <select
                 value={cta}
                 onChange={(e) => setCta(e.target.value)}
@@ -343,15 +311,12 @@ export function Generator({ onRequestAuth }: GeneratorProps) {
                   onClick={() => setIncludeHashtags(!includeHashtags)}
                   className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${includeHashtags ? 'bg-blue-600' : 'bg-gray-300'}`}
                 >
-                  <span
-                    className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform ${includeHashtags ? 'translate-x-4.5' : 'translate-x-0.5'}`}
-                  />
+                  <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform ${includeHashtags ? 'translate-x-4.5' : 'translate-x-0.5'}`} />
                 </button>
               </div>
-
               {includeHashtags && (
                 <div className="space-y-2">
-                  <p className="text-xs text-gray-500">Add hashtags you want included in the caption</p>
+                  <p className="text-xs text-gray-500">Add hashtags you want included</p>
                   <div className="flex gap-2">
                     <div className="relative flex-1">
                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">#</span>
@@ -376,16 +341,9 @@ export function Generator({ onRequestAuth }: GeneratorProps) {
                   {customHashtags.length > 0 && (
                     <div className="flex flex-wrap gap-1.5">
                       {customHashtags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full"
-                        >
+                        <span key={tag} className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full">
                           #{tag}
-                          <button
-                            type="button"
-                            onClick={() => removeHashtag(tag)}
-                            className="hover:text-blue-900 transition"
-                          >
+                          <button type="button" onClick={() => removeHashtag(tag)} className="hover:text-blue-900 transition">
                             <X className="w-3 h-3" />
                           </button>
                         </span>
@@ -396,21 +354,47 @@ export function Generator({ onRequestAuth }: GeneratorProps) {
               )}
             </div>
 
+            {plan !== 'free' && (
+              <ModelSelector
+                feature="caption"
+                plan={plan}
+                selected={selectedModel}
+                onChange={setSelectedModel}
+                onUpgradeRequired={onUpgrade}
+              />
+            )}
+
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
                 {error}
+              </div>
+            )}
+
+            {plan !== 'free' && (
+              <div className="flex items-center justify-between text-sm pt-1">
+                <div className="flex items-center gap-1.5 text-gray-600">
+                  <Zap className="w-4 h-4 text-amber-500" />
+                  Cost: <span className="font-semibold text-gray-900 ml-1">{creditCost} credits</span>
+                </div>
+                <span className="text-gray-400">Balance: {credits}</span>
               </div>
             )}
 
             <button
               type="submit"
-              disabled={loading || !topic}
+              disabled={loading || !topic || !canAfford}
               className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
                   Generating...
+                </>
+              ) : freeLimitReached ? (
+                <>
+                  <Zap className="w-5 h-5" />
+                  Upgrade to Generate
                 </>
               ) : (
                 <>
@@ -429,7 +413,6 @@ export function Generator({ onRequestAuth }: GeneratorProps) {
               <p className="text-gray-600">Your generated captions will appear here</p>
             </div>
           )}
-
           {variations.map((variation, index) => (
             <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <div className="flex items-center justify-between mb-4">
@@ -456,9 +439,7 @@ export function Generator({ onRequestAuth }: GeneratorProps) {
                   </button>
                 </div>
               </div>
-
               <p className="text-gray-900 whitespace-pre-wrap mb-4">{variation.caption}</p>
-
               {variation.hashtags && (
                 <div className="pt-4 border-t border-gray-100">
                   <p className="text-blue-600 text-sm">{variation.hashtags}</p>

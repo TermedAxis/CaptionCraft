@@ -6,13 +6,20 @@ import {
   ThumbnailFormValues,
   STYLE_OPTIONS,
   EMOTION_OPTIONS,
-  THUMBNAIL_CREDIT_COST,
 } from './types';
+import { ModelSelector } from '../../components/ModelSelector';
+import { PlanType, ModelId } from '../../lib/supabase';
+import { getCreditCost } from '../../lib/credits';
 
 interface ThumbnailFormProps {
   onSubmit: (values: ThumbnailFormValues) => void;
   loading: boolean;
   credits: number;
+  plan: PlanType;
+  selectedModel: ModelId;
+  onModelChange: (model: ModelId) => void;
+  onUpgrade: () => void;
+  freeLimitReached: boolean;
 }
 
 const YOUTUBE_URL_REGEX = /^https?:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)[\w-]+/;
@@ -26,7 +33,7 @@ interface UploadedImage {
 
 type InspirationTab = 'urls' | 'images';
 
-export function ThumbnailForm({ onSubmit, loading, credits }: ThumbnailFormProps) {
+export function ThumbnailForm({ onSubmit, loading, credits, plan, selectedModel, onModelChange, onUpgrade, freeLimitReached }: ThumbnailFormProps) {
   const [topic, setTopic] = useState('');
   const [style, setStyle] = useState<ThumbnailStyle>('bold_youtube');
   const [emotion, setEmotion] = useState<ThumbnailEmotion>('excited');
@@ -40,7 +47,8 @@ export function ThumbnailForm({ onSubmit, loading, credits }: ThumbnailFormProps
   const [fileError, setFileError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const canAfford = credits >= THUMBNAIL_CREDIT_COST;
+  const creditCost = plan !== 'free' ? getCreditCost('thumbnail', selectedModel) : 0;
+  const canAfford = plan === 'free' ? !freeLimitReached : credits >= creditCost;
 
   const validateUrl = (url: string, index: number) => {
     if (!url) {
@@ -353,19 +361,31 @@ export function ThumbnailForm({ onSubmit, loading, credits }: ThumbnailFormProps
         )}
       </div>
 
+      {plan !== 'free' && (
+        <ModelSelector
+          feature="thumbnail"
+          plan={plan}
+          selected={selectedModel}
+          onChange={onModelChange}
+          onUpgradeRequired={onUpgrade}
+        />
+      )}
+
       <div className="pt-2 border-t border-gray-100">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Zap className="w-4 h-4 text-amber-500" />
-            <span className="text-sm text-gray-600">
-              Cost: <span className="font-semibold text-gray-900">{THUMBNAIL_CREDIT_COST} credits</span>
-            </span>
-            <span className="text-sm text-gray-400">(Balance: {credits})</span>
+        {plan !== 'free' && (
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Zap className="w-4 h-4 text-amber-500" />
+              <span className="text-sm text-gray-600">
+                Cost: <span className="font-semibold text-gray-900">{creditCost} credits</span>
+              </span>
+              <span className="text-sm text-gray-400">(Balance: {credits})</span>
+            </div>
+            {!canAfford && (
+              <span className="text-xs text-red-500 font-medium">Insufficient credits</span>
+            )}
           </div>
-          {!canAfford && (
-            <span className="text-xs text-red-500 font-medium">Insufficient credits</span>
-          )}
-        </div>
+        )}
 
         <button
           type="submit"
@@ -376,6 +396,11 @@ export function ThumbnailForm({ onSubmit, loading, credits }: ThumbnailFormProps
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
               Generating Thumbnails...
+            </>
+          ) : freeLimitReached ? (
+            <>
+              <Zap className="w-4 h-4" />
+              Upgrade to Generate
             </>
           ) : (
             <>

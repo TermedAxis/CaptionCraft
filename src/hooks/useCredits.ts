@@ -1,32 +1,65 @@
 import { useAuth } from '../contexts/AuthContext';
-import { supabase } from '../lib/supabase';
+import { FeatureType, ModelId } from '../lib/supabase';
+import {
+  deductCredits as deductCreditsHelper,
+  logUsage,
+  getFreeUsageCount,
+  incrementFreeUsage,
+  getCreditCost,
+  FREE_LIMITS,
+} from '../lib/credits';
 
 export function useCredits() {
   const { profile, refreshProfile } = useAuth();
 
-  const credits = profile?.credits ?? 0;
+  const plan = profile?.plan_type ?? 'free';
+  const credits = profile?.credits_remaining ?? 0;
 
-  const hasEnoughCredits = (cost: number): boolean => {
-    return credits >= cost;
+  const checkFreeLimit = async (feature: FeatureType): Promise<{ allowed: boolean; used: number; limit: number }> => {
+    if (!profile) return { allowed: false, used: 0, limit: FREE_LIMITS[feature] };
+    const used = await getFreeUsageCount(profile.id, feature);
+    const limit = FREE_LIMITS[feature];
+    return { allowed: used < limit, used, limit };
+  };
+
+  const hasEnoughCredits = (cost: number): boolean => credits >= cost;
+
+  const consumeGeneration = async (feature: FeatureType, model: ModelId): Promise<boolean> => {
+    if (!profile) return false;
+
+    if (plan === 'free') {
+      await incrementFreeUsage(profile.id, feature);
+      await logUsage(profile.id, feature, model, 0);
+      await refreshProfile();
+      return true;
+    }
+
+    const cost = getCreditCost(feature, model);
+    if (credits < cost) return false;
+
+    const success = await deductCreditsHelper(profile.id, credits, cost);
+    if (!success) return false;
+
+    await logUsage(profile.id, feature, model, cost);
+    await refreshProfile();
+    return true;
   };
 
   const deductCredits = async (cost: number): Promise<boolean> => {
     if (!profile) return false;
     if (credits < cost) return false;
-
-    const { error } = await supabase
-      .from('profiles')
-      .update({ credits: credits - cost })
-      .eq('id', profile.id);
-
-    if (error) {
-      console.error('Failed to deduct credits:', error);
-      return false;
-    }
-
-    await refreshProfile();
-    return true;
+    const success = await deductCreditsHelper(profile.id, credits, cost);
+    if (success) await refreshProfile();
+    return success;
   };
 
-  return { credits, hasEnoughCredits, deductCredits };
+  return {
+    plan,
+    credits,
+    hasEnoughCredits,
+    consumeGeneration,
+    checkFreeLimit,
+    deductCredits,
+    FREE_LIMITS,
+  };
 }

@@ -9,16 +9,44 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+export type PlanType = 'free' | 'hobby' | 'pro';
+export type FeatureType = 'caption' | 'post' | 'script' | 'thumbnail';
+export type TextModel = 'base' | 'mid' | 'premium';
+export type ImageModel = 'base-image' | 'hobby-image' | 'pro-image';
+export type ModelId = TextModel | ImageModel;
+
 export type Profile = {
   id: string;
   email: string;
   full_name: string | null;
   subscription_tier: 'free' | 'paid';
+  plan_type: PlanType;
   credits: number;
+  credits_remaining: number;
+  billing_cycle_end: string | null;
+  subscription_id: string | null;
   stripe_customer_id: string | null;
   stripe_subscription_id: string | null;
   subscription_status: string | null;
   subscription_ends_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type UsageLog = {
+  id: string;
+  user_id: string;
+  feature_type: FeatureType;
+  model_used: string;
+  credits_used: number;
+  created_at: string;
+};
+
+export type FreeUsage = {
+  id: string;
+  user_id: string;
+  feature_type: FeatureType;
+  usage_count: number;
   created_at: string;
   updated_at: string;
 };

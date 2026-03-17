@@ -83,6 +83,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           email: email,
           full_name: fullName,
           subscription_tier: 'free',
+          plan_type: 'free',
+          credits_remaining: 0,
         });
 
         if (profileError) {

@@ -5,14 +5,21 @@ import {
   ScriptLength,
   ScriptTone,
   ScriptFormValues,
-  CREDIT_COSTS,
   LENGTH_LABELS,
 } from './types';
+import { ModelSelector } from '../../components/ModelSelector';
+import { PlanType, ModelId } from '../../lib/supabase';
+import { getCreditCost } from '../../lib/credits';
 
 interface ScriptFormProps {
   onSubmit: (values: ScriptFormValues) => void;
   loading: boolean;
   credits: number;
+  plan: PlanType;
+  selectedModel: ModelId;
+  onModelChange: (model: ModelId) => void;
+  onUpgrade: () => void;
+  freeLimitReached: boolean;
 }
 
 const PLATFORMS: { value: Platform; label: string }[] = [
@@ -31,7 +38,7 @@ const TONES: { value: ScriptTone; label: string; desc: string }[] = [
 
 const YOUTUBE_URL_REGEX = /^https?:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)[\w-]+/;
 
-export function ScriptForm({ onSubmit, loading, credits }: ScriptFormProps) {
+export function ScriptForm({ onSubmit, loading, credits, plan, selectedModel, onModelChange, onUpgrade, freeLimitReached }: ScriptFormProps) {
   const [platform, setPlatform] = useState<Platform>('youtube');
   const [topic, setTopic] = useState('');
   const [targetAudience, setTargetAudience] = useState('');
@@ -43,8 +50,8 @@ export function ScriptForm({ onSubmit, loading, credits }: ScriptFormProps) {
   const [inspirationUrls, setInspirationUrls] = useState<string[]>(['']);
   const [urlErrors, setUrlErrors] = useState<Record<number, string>>({});
 
-  const creditCost = CREDIT_COSTS[length] * variations;
-  const canAfford = credits >= creditCost;
+  const creditCost = plan !== 'free' ? getCreditCost('script', selectedModel) * variations : 0;
+  const canAfford = plan === 'free' ? !freeLimitReached : credits >= creditCost;
 
   const validateUrl = (url: string, index: number) => {
     if (!url) {
@@ -289,19 +296,31 @@ export function ScriptForm({ onSubmit, loading, credits }: ScriptFormProps) {
         </p>
       </div>
 
+      {plan !== 'free' && (
+        <ModelSelector
+          feature="script"
+          plan={plan}
+          selected={selectedModel}
+          onChange={onModelChange}
+          onUpgradeRequired={onUpgrade}
+        />
+      )}
+
       <div className="pt-3 border-t border-gray-100">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Zap className="w-4 h-4 text-amber-500" />
-            <span className="text-sm text-gray-600">
-              Cost: <span className="font-semibold text-gray-900">{creditCost} credits</span>
-            </span>
-            <span className="text-sm text-gray-400">(Balance: {credits})</span>
+        {plan !== 'free' && (
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Zap className="w-4 h-4 text-amber-500" />
+              <span className="text-sm text-gray-600">
+                Cost: <span className="font-semibold text-gray-900">{creditCost} credits</span>
+              </span>
+              <span className="text-sm text-gray-400">(Balance: {credits})</span>
+            </div>
+            {!canAfford && (
+              <span className="text-xs text-red-500 font-medium">Insufficient credits</span>
+            )}
           </div>
-          {!canAfford && (
-            <span className="text-xs text-red-500 font-medium">Insufficient credits</span>
-          )}
-        </div>
+        )}
 
         <button
           type="submit"
@@ -312,6 +331,11 @@ export function ScriptForm({ onSubmit, loading, credits }: ScriptFormProps) {
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
               Generating Script...
+            </>
+          ) : freeLimitReached ? (
+            <>
+              <Zap className="w-4 h-4" />
+              Upgrade to Generate
             </>
           ) : (
             <>

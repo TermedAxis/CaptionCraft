@@ -1,4 +1,4 @@
-import { Loader2, Wand2 } from "lucide-react";
+import { Loader2, Wand2, Zap } from "lucide-react";
 import { ContentTab, ContentFormValues } from "./types";
 
 const POST_PLATFORMS = ["Instagram", "Facebook", "LinkedIn", "Twitter", "Threads"];
@@ -35,9 +35,10 @@ interface ContentFormProps {
   onChange: (values: ContentFormValues) => void;
   onSubmit: (e: React.FormEvent) => void;
   loading: boolean;
+  freeLimitReached?: boolean;
 }
 
-export function ContentForm({ tab, values, onChange, onSubmit, loading }: ContentFormProps) {
+export function ContentForm({ tab, values, onChange, onSubmit, loading, freeLimitReached }: ContentFormProps) {
   const platforms =
     tab === "post" ? POST_PLATFORMS :
     tab === "carousel" ? CAROUSEL_PLATFORMS :
@@ -129,13 +130,18 @@ export function ContentForm({ tab, values, onChange, onSubmit, loading }: Conten
 
       <button
         type="submit"
-        disabled={loading || !values.topic.trim()}
+        disabled={loading || !values.topic.trim() || freeLimitReached}
         className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {loading ? (
           <>
             <Loader2 className="w-5 h-5 animate-spin" />
             Generating...
+          </>
+        ) : freeLimitReached ? (
+          <>
+            <Zap className="w-5 h-5" />
+            Upgrade to Generate
           </>
         ) : (
           <>

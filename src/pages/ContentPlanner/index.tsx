@@ -1,7 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../contexts/AuthContext";
-import { AlignLeft, LayoutGrid, MessageSquare, Copy, Check, Bookmark, BookmarkCheck, AlertCircle, Wand2 } from "lucide-react";
+import { useCredits } from "../../hooks/useCredits";
+import { ModelId } from "../../lib/supabase";
+import { getCreditCost, FREE_LIMITS } from "../../lib/credits";
+import { ModelSelector } from "../../components/ModelSelector";
+import { AlignLeft, LayoutGrid, MessageSquare, Copy, Check, Bookmark, BookmarkCheck, AlertCircle, Wand2, Zap } from "lucide-react";
 import { ContentForm } from "./ContentForm";
 import { PostResult } from "./PostResult";
 import { CarouselResult } from "./CarouselResult";
@@ -42,10 +46,12 @@ type AnyResult = PostResultType | CarouselResultType | VideoResultType | ThreadR
 
 interface ContentPlannerProps {
   onRequestAuth: (message?: string) => void;
+  onUpgrade: () => void;
 }
 
-export function ContentPlanner({ onRequestAuth }: ContentPlannerProps) {
+export function ContentPlanner({ onRequestAuth, onUpgrade }: ContentPlannerProps) {
   const { user, profile } = useAuth();
+  const { plan, credits, checkFreeLimit, consumeGeneration } = useCredits();
   const [tab, setTab] = useState<ContentTab>("post");
   const [form, setForm] = useState<ContentFormValues>(DEFAULT_FORM);
   const [loading, setLoading] = useState(false);
@@ -54,6 +60,24 @@ export function ContentPlanner({ onRequestAuth }: ContentPlannerProps) {
   const [resultTab, setResultTab] = useState<ContentTab>("post");
   const [copied, setCopied] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [selectedModel, setSelectedModel] = useState<ModelId>("base");
+  const [freeUsed, setFreeUsed] = useState(0);
+  const [freeChecked, setFreeChecked] = useState(false);
+
+  useEffect(() => {
+    if (user && plan === "free") {
+      checkFreeLimit("post").then(({ used }) => {
+        setFreeUsed(used);
+        setFreeChecked(true);
+      });
+    } else {
+      setFreeChecked(true);
+    }
+  }, [user, plan]);
+
+  const freeLimit = FREE_LIMITS.post;
+  const freeLimitReached = plan === "free" && freeChecked && freeUsed >= freeLimit;
+  const creditCost = plan !== "free" ? getCreditCost("post", selectedModel) : 0;
 
   const handleTabChange = (newTab: ContentTab) => {
     const config = TAB_CONFIG.find((t) => t.id === newTab)!;
@@ -68,6 +92,18 @@ export function ContentPlanner({ onRequestAuth }: ContentPlannerProps) {
 
     if (!user) {
       onRequestAuth("Sign in to generate content plans");
+      return;
+    }
+
+    if (plan === "free") {
+      const { allowed, used } = await checkFreeLimit("post");
+      setFreeUsed(used);
+      if (!allowed) {
+        onUpgrade();
+        return;
+      }
+    } else if (credits < creditCost) {
+      setError(`Not enough credits. You need ${creditCost} but have ${credits}.`);
       return;
     }
 
@@ -92,6 +128,7 @@ export function ContentPlanner({ onRequestAuth }: ContentPlannerProps) {
           targetAudience: form.targetAudience || undefined,
           goal: form.goal || undefined,
           extraContext: form.extraContext || undefined,
+          model: selectedModel,
         }),
       });
 
@@ -100,6 +137,9 @@ export function ContentPlanner({ onRequestAuth }: ContentPlannerProps) {
 
       setResult(data.result);
       setResultTab(tab);
+
+      await consumeGeneration("post", selectedModel);
+      if (plan === "free") setFreeUsed((prev) => prev + 1);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to generate content plan");
     } finally {
@@ -138,9 +178,28 @@ export function ContentPlanner({ onRequestAuth }: ContentPlannerProps) {
 
   return (
     <div className="max-w-7xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Content Creator</h1>
-        <p className="text-gray-600">Plan and script your social media content with AI</p>
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Content Creator</h1>
+          <p className="text-gray-600">Plan and script your social media content with AI</p>
+        </div>
+        {user && plan === "free" && freeChecked && (
+          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm ${
+            freeLimitReached ? "bg-red-50 text-red-700" : "bg-blue-50 text-blue-700"
+          }`}>
+            <AlertCircle className="w-4 h-4" />
+            <span>Free: {freeUsed}/{freeLimit} posts used</span>
+            {freeLimitReached && (
+              <button onClick={onUpgrade} className="underline font-semibold">Upgrade</button>
+            )}
+          </div>
+        )}
+        {user && plan !== "free" && (
+          <div className="flex items-center gap-1.5 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
+            <Zap className="w-4 h-4 text-amber-500" />
+            <span className="text-sm font-semibold text-amber-700">{credits.toLocaleString()} credits</span>
+          </div>
+        )}
       </div>
 
       <div className="flex gap-3 mb-8">
@@ -177,7 +236,26 @@ export function ContentPlanner({ onRequestAuth }: ContentPlannerProps) {
             onChange={setForm}
             onSubmit={handleSubmit}
             loading={loading}
+            freeLimitReached={freeLimitReached}
           />
+          {plan !== "free" && (
+            <div className="mt-4 pt-4 border-t border-gray-100 space-y-3">
+              <ModelSelector
+                feature="post"
+                plan={plan}
+                selected={selectedModel}
+                onChange={setSelectedModel}
+                onUpgradeRequired={onUpgrade}
+              />
+              <div className="flex items-center justify-between text-sm">
+                <div className="flex items-center gap-1.5 text-gray-600">
+                  <Zap className="w-4 h-4 text-amber-500" />
+                  Cost: <span className="font-semibold text-gray-900 ml-1">{creditCost} credits</span>
+                </div>
+                <span className="text-gray-400">Balance: {credits}</span>
+              </div>
+            </div>
+          )}
         </div>
 
         <div>
