@@ -38,6 +38,7 @@ export function ScriptForm({ onSubmit, loading, credits }: ScriptFormProps) {
   const [length, setLength] = useState<ScriptLength>('short');
   const [tone, setTone] = useState<ScriptTone>('educational');
   const [cta, setCta] = useState('');
+  const [extraContext, setExtraContext] = useState('');
   const [variations, setVariations] = useState(1);
   const [inspirationUrls, setInspirationUrls] = useState<string[]>(['']);
   const [urlErrors, setUrlErrors] = useState<Record<number, string>>({});
@@ -84,7 +85,7 @@ export function ScriptForm({ onSubmit, loading, credits }: ScriptFormProps) {
     e.preventDefault();
     if (Object.keys(urlErrors).length > 0) return;
     const validUrls = inspirationUrls.filter((url) => url.trim() && YOUTUBE_URL_REGEX.test(url));
-    onSubmit({ platform, topic, targetAudience, length, tone, cta, variations, inspirationUrls: validUrls });
+    onSubmit({ platform, topic, targetAudience, length, tone, cta, variations, inspirationUrls: validUrls, extraContext });
   };
 
   const lengthEntries = Object.entries(LENGTH_LABELS) as [ScriptLength, string][];
@@ -200,6 +201,19 @@ export function ScriptForm({ onSubmit, loading, credits }: ScriptFormProps) {
           onChange={(e) => setCta(e.target.value)}
           placeholder="e.g. Subscribe for more tips"
           className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          Extra Context <span className="text-gray-400 font-normal text-xs">(optional)</span>
+        </label>
+        <textarea
+          rows={2}
+          value={extraContext}
+          onChange={(e) => setExtraContext(e.target.value)}
+          placeholder="e.g. Include a personal story, reference recent news, avoid mentioning competitors..."
+          className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
         />
       </div>
 

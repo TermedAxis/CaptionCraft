@@ -25,6 +25,7 @@ export interface ScriptFormValues {
   cta: string;
   variations: number;
   inspirationUrls: string[];
+  extraContext: string;
 }
 
 export const CREDIT_COSTS: Record<ScriptLength, number> = {

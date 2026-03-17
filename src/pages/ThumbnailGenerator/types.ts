@@ -22,6 +22,7 @@ export interface ThumbnailFormValues {
   emotion: ThumbnailEmotion;
   colorTheme: string;
   textOverlay: string;
+  extraContext: string;
   inspirationUrls: string[];
   inspirationImages: string[];
 }

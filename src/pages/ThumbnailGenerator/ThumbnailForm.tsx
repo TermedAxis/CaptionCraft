@@ -32,6 +32,7 @@ export function ThumbnailForm({ onSubmit, loading, credits }: ThumbnailFormProps
   const [emotion, setEmotion] = useState<ThumbnailEmotion>('excited');
   const [colorTheme, setColorTheme] = useState('');
   const [textOverlay, setTextOverlay] = useState('');
+  const [extraContext, setExtraContext] = useState('');
   const [inspirationTab, setInspirationTab] = useState<InspirationTab>('urls');
   const [inspirationUrls, setInspirationUrls] = useState<string[]>(['']);
   const [urlErrors, setUrlErrors] = useState<Record<number, string>>({});
@@ -129,6 +130,7 @@ export function ThumbnailForm({ onSubmit, loading, credits }: ThumbnailFormProps
       emotion,
       colorTheme,
       textOverlay,
+      extraContext,
       inspirationUrls: validUrls,
       inspirationImages: images,
     });
@@ -219,6 +221,19 @@ export function ThumbnailForm({ onSubmit, loading, credits }: ThumbnailFormProps
             className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          Extra Context <span className="text-gray-400 font-normal">(optional)</span>
+        </label>
+        <textarea
+          rows={2}
+          value={extraContext}
+          onChange={(e) => setExtraContext(e.target.value)}
+          placeholder="e.g. Show a shocked face, use dark background, include a money bag icon..."
+          className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+        />
       </div>
 
       <div>

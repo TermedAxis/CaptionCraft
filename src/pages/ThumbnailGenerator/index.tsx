@@ -35,6 +35,7 @@ export function ThumbnailGenerator({ onRequestAuth }: ThumbnailGeneratorProps) {
         emotion: values.emotion,
         colorTheme: values.colorTheme,
         textOverlay: values.textOverlay,
+        extraContext: values.extraContext || undefined,
         inspirationUrls: values.inspirationUrls,
         inspirationImages: values.inspirationImages,
       }),

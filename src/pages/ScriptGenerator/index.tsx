@@ -55,6 +55,7 @@ export function ScriptGenerator({ onRequestAuth }: ScriptGeneratorProps) {
           cta: values.cta,
           variations: values.variations,
           inspirationUrls: values.inspirationUrls,
+          extraContext: values.extraContext || undefined,
         }),
       });
 

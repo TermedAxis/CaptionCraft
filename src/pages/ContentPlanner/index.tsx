@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../contexts/AuthContext";
-import { AlignLeft, LayoutGrid, Video, MessageSquare, Copy, Check, Bookmark, BookmarkCheck, AlertCircle, Wand2 } from "lucide-react";
+import { AlignLeft, LayoutGrid, MessageSquare, Copy, Check, Bookmark, BookmarkCheck, AlertCircle, Wand2 } from "lucide-react";
 import { ContentForm } from "./ContentForm";
 import { PostResult } from "./PostResult";
 import { CarouselResult } from "./CarouselResult";
@@ -28,7 +28,6 @@ const DEFAULT_FORM: ContentFormValues = {
 const TAB_CONFIG: { id: ContentTab; label: string; icon: React.ElementType; description: string; defaultPlatform: string }[] = [
   { id: "post", label: "Social Post", icon: AlignLeft, description: "Single image or text post", defaultPlatform: "instagram" },
   { id: "carousel", label: "Carousel", icon: LayoutGrid, description: "Multi-slide swipeable post", defaultPlatform: "instagram" },
-  { id: "video", label: "Short Video", icon: Video, description: "Reels, TikToks & Shorts", defaultPlatform: "tiktok" },
   { id: "thread", label: "Thread", icon: MessageSquare, description: "Twitter / Threads thread", defaultPlatform: "twitter" },
 ];
 
