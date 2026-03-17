@@ -296,15 +296,13 @@ export function ScriptForm({ onSubmit, loading, credits, plan, selectedModel, on
         </p>
       </div>
 
-      {plan !== 'free' && (
-        <ModelSelector
-          feature="script"
-          plan={plan}
-          selected={selectedModel}
-          onChange={onModelChange}
-          onUpgradeRequired={onUpgrade}
-        />
-      )}
+      <ModelSelector
+        feature="script"
+        plan={plan}
+        selected={selectedModel}
+        onChange={onModelChange}
+        onUpgradeRequired={onUpgrade}
+      />
 
       <div className="pt-3 border-t border-gray-100">
         {plan !== 'free' && (

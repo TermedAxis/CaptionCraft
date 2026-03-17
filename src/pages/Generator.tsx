@@ -354,15 +354,13 @@ export function Generator({ onRequestAuth, onUpgrade }: GeneratorProps) {
               )}
             </div>
 
-            {plan !== 'free' && (
-              <ModelSelector
-                feature="caption"
-                plan={plan}
-                selected={selectedModel}
-                onChange={setSelectedModel}
-                onUpgradeRequired={onUpgrade}
-              />
-            )}
+            <ModelSelector
+              feature="caption"
+              plan={plan}
+              selected={selectedModel}
+              onChange={setSelectedModel}
+              onUpgradeRequired={onUpgrade}
+            />
 
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm flex items-start gap-2">

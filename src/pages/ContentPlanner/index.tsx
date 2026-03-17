@@ -238,15 +238,15 @@ export function ContentPlanner({ onRequestAuth, onUpgrade }: ContentPlannerProps
             loading={loading}
             freeLimitReached={freeLimitReached}
           />
-          {plan !== "free" && (
-            <div className="mt-4 pt-4 border-t border-gray-100 space-y-3">
-              <ModelSelector
-                feature="post"
-                plan={plan}
-                selected={selectedModel}
-                onChange={setSelectedModel}
-                onUpgradeRequired={onUpgrade}
-              />
+          <div className="mt-4 pt-4 border-t border-gray-100 space-y-3">
+            <ModelSelector
+              feature="post"
+              plan={plan}
+              selected={selectedModel}
+              onChange={setSelectedModel}
+              onUpgradeRequired={onUpgrade}
+            />
+            {plan !== "free" && (
               <div className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-1.5 text-gray-600">
                   <Zap className="w-4 h-4 text-amber-500" />
@@ -254,8 +254,8 @@ export function ContentPlanner({ onRequestAuth, onUpgrade }: ContentPlannerProps
                 </div>
                 <span className="text-gray-400">Balance: {credits}</span>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         <div>

@@ -361,15 +361,13 @@ export function ThumbnailForm({ onSubmit, loading, credits, plan, selectedModel,
         )}
       </div>
 
-      {plan !== 'free' && (
-        <ModelSelector
-          feature="thumbnail"
-          plan={plan}
-          selected={selectedModel}
-          onChange={onModelChange}
-          onUpgradeRequired={onUpgrade}
-        />
-      )}
+      <ModelSelector
+        feature="thumbnail"
+        plan={plan}
+        selected={selectedModel}
+        onChange={onModelChange}
+        onUpgradeRequired={onUpgrade}
+      />
 
       <div className="pt-2 border-t border-gray-100">
         {plan !== 'free' && (
