@@ -1,6 +1,7 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Sparkles, FileText, LogOut, Crown, LayoutGrid, ScrollText, Image as ImageIcon, Zap, Star, TrendingUp } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Zap, LogOut, Crown, LayoutGrid, ScrollText, Image as ImageIcon, Star, TrendingUp, FileText, Menu, X } from 'lucide-react';
 
 type NavPage = 'generator' | 'saved' | 'planner' | 'script' | 'thumbnail';
 
@@ -22,13 +23,25 @@ const AUTH_MESSAGES: Partial<Record<NavPage, string>> = {
 };
 
 const PLAN_CONFIG = {
-  free: { label: 'Free', icon: null, className: '' },
-  hobby: { label: 'Hobby', icon: Star, className: 'bg-blue-600 text-white' },
-  pro: { label: 'Pro', icon: Crown, className: 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' },
+  free: { label: 'Free', icon: null, className: 'bg-bat-surface2 text-bat-muted border border-bat-border' },
+  hobby: { label: 'Hobby', icon: Star, className: 'bg-white/10 text-white border border-white/20' },
+  pro: { label: 'Pro', icon: Crown, className: 'bg-white text-black border border-white' },
 };
+
+function BatLogo() {
+  return (
+    <div className="flex items-center gap-2.5">
+      <div className="w-7 h-7 bg-white rounded-lg flex items-center justify-center shrink-0">
+        <span className="text-black font-bold text-xs tracking-tight">SB</span>
+      </div>
+      <span className="text-base font-semibold tracking-tight text-white">Social Bat</span>
+    </div>
+  );
+}
 
 export function DashboardLayout({ children, currentPage, onNavigate, onRequestAuth, onUpgrade, onBuyCredits }: DashboardLayoutProps) {
   const { user, signOut, profile } = useAuth();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const plan = profile?.plan_type ?? 'free';
   const credits = profile?.credits_remaining ?? 0;
@@ -36,7 +49,7 @@ export function DashboardLayout({ children, currentPage, onNavigate, onRequestAu
 
   const navItems: { id: NavPage; label: string; icon: React.ElementType }[] = [
     { id: 'planner', label: 'Content Creator', icon: LayoutGrid },
-    { id: 'generator', label: 'Caption Creator', icon: Sparkles },
+    { id: 'generator', label: 'Caption Creator', icon: Zap },
     { id: 'script', label: 'Script Generator', icon: ScrollText },
     { id: 'thumbnail', label: 'Thumbnail Generator', icon: ImageIcon },
     { id: 'saved', label: 'Saved', icon: FileText },
@@ -45,110 +58,177 @@ export function DashboardLayout({ children, currentPage, onNavigate, onRequestAu
   const handleNavClick = (id: NavPage) => {
     if (AUTH_REQUIRED_PAGES.includes(id) && !user) {
       onRequestAuth(AUTH_MESSAGES[id]);
+      setMobileOpen(false);
       return;
     }
     onNavigate(id);
+    setMobileOpen(false);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white border-b border-gray-200">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-8">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-7 h-7 text-blue-600" />
-                <span className="text-xl font-bold text-gray-900">CaptionCraft</span>
-              </div>
-
-              <div className="hidden md:flex items-center gap-1">
-                {navItems.map(({ id, label, icon: Icon }) => (
-                  <button
-                    key={id}
-                    onClick={() => handleNavClick(id)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition ${
-                      currentPage === id
-                        ? 'bg-blue-50 text-blue-600'
-                        : 'text-gray-600 hover:bg-gray-50'
-                    }`}
-                  >
-                    <Icon className="w-4 h-4" />
-                    {label}
-                  </button>
-                ))}
-              </div>
+    <div className="min-h-screen bg-bat-bg">
+      <nav className="sticky top-0 z-40 border-b border-bat-border bg-bat-bg/90 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-5 min-w-0">
+            <BatLogo />
+            <div className="hidden lg:flex items-center gap-0.5">
+              {navItems.map(({ id, label, icon: Icon }) => (
+                <button
+                  key={id}
+                  onClick={() => handleNavClick(id)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap ${
+                    currentPage === id
+                      ? 'bg-white/10 text-white'
+                      : 'text-bat-muted hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5 shrink-0" />
+                  {label}
+                </button>
+              ))}
             </div>
+          </div>
 
-            <div className="flex items-center gap-2">
-              {user ? (
-                <>
-                  {plan !== 'free' && planConfig.icon && (
-                    <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold ${planConfig.className}`}>
-                      <planConfig.icon className="w-3.5 h-3.5" />
-                      {planConfig.label}
-                    </div>
-                  )}
-
-                  {plan === 'free' ? (
-                    <button
-                      onClick={onUpgrade}
-                      className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition"
-                    >
-                      <Zap className="w-3.5 h-3.5" />
-                      Upgrade
-                    </button>
-                  ) : (
-                    <div className="flex items-center gap-1.5">
-                      <div className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-lg">
-                        <Zap className="w-3.5 h-3.5 text-amber-500" />
-                        <span className="text-sm font-semibold text-amber-700">{credits.toLocaleString()}</span>
-                        <span className="text-xs text-amber-500 hidden sm:inline">cr</span>
-                      </div>
-                      <button
-                        onClick={onBuyCredits}
-                        title="Buy more credits"
-                        className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
-                      >
-                        <TrendingUp className="w-4 h-4" />
-                      </button>
-                    </div>
-                  )}
-
-                  <div className="text-right hidden sm:block">
-                    <p className="text-sm font-medium text-gray-900">{profile?.full_name}</p>
-                    <p className="text-xs text-gray-500">{profile?.email}</p>
+          <div className="flex items-center gap-2 shrink-0">
+            {user ? (
+              <>
+                {plan !== 'free' && planConfig.icon && (
+                  <div className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold ${planConfig.className}`}>
+                    <planConfig.icon className="w-3 h-3" />
+                    {planConfig.label}
                   </div>
+                )}
+                {plan === 'free' ? (
                   <button
-                    onClick={signOut}
-                    className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition"
-                    title="Sign out"
+                    onClick={onUpgrade}
+                    className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-white text-black text-xs font-semibold rounded-lg transition-all duration-200 hover:bg-bat-accent active:scale-95"
                   >
-                    <LogOut className="w-5 h-5" />
+                    <Zap className="w-3 h-3" />
+                    Upgrade
                   </button>
-                </>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => onRequestAuth()}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition"
-                  >
-                    Sign In
-                  </button>
-                  <button
-                    onClick={() => onRequestAuth()}
-                    className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition"
-                  >
-                    Sign Up Free
-                  </button>
+                ) : (
+                  <div className="hidden sm:flex items-center gap-1.5">
+                    <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-bat-surface border border-bat-border rounded-lg">
+                      <Zap className="w-3 h-3 text-bat-muted" />
+                      <span className="text-sm font-semibold text-white">{credits.toLocaleString()}</span>
+                      <span className="text-xs text-bat-subtle">cr</span>
+                    </div>
+                    <button
+                      onClick={onBuyCredits}
+                      title="Buy more credits"
+                      className="p-1.5 text-bat-muted hover:text-white hover:bg-bat-surface rounded-lg transition-all duration-200"
+                    >
+                      <TrendingUp className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+                <div className="hidden sm:block">
+                  <p className="text-xs font-medium text-white leading-none">{profile?.full_name}</p>
                 </div>
-              )}
-            </div>
+                <button
+                  onClick={signOut}
+                  className="p-1.5 text-bat-muted hover:text-white hover:bg-bat-surface rounded-lg transition-all duration-200"
+                  title="Sign out"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </>
+            ) : (
+              <div className="hidden sm:flex items-center gap-2">
+                <button
+                  onClick={() => onRequestAuth()}
+                  className="px-3 py-1.5 text-sm font-medium text-bat-muted hover:text-white transition-colors duration-200"
+                >
+                  Sign In
+                </button>
+                <button
+                  onClick={() => onRequestAuth()}
+                  className="px-4 py-1.5 text-sm font-semibold text-black bg-white hover:bg-bat-accent rounded-lg transition-all duration-200 active:scale-95"
+                >
+                  Get Started
+                </button>
+              </div>
+            )}
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="lg:hidden p-1.5 text-bat-muted hover:text-white hover:bg-bat-surface rounded-lg transition-all duration-200"
+            >
+              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
           </div>
         </div>
       </nav>
 
-      <main className="container mx-auto px-6 py-8">
-        {children}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.15 }}
+            className="fixed inset-x-0 top-14 z-30 bg-bat-surface border-b border-bat-border lg:hidden"
+            style={{ boxShadow: '0 8px 32px rgba(0,0,0,0.8)' }}
+          >
+            <div className="p-4 space-y-1">
+              {navItems.map(({ id, label, icon: Icon }) => (
+                <button
+                  key={id}
+                  onClick={() => handleNavClick(id)}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                    currentPage === id
+                      ? 'bg-white/10 text-white'
+                      : 'text-bat-muted hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  {label}
+                </button>
+              ))}
+              <div className="pt-3 border-t border-bat-border mt-2">
+                {user ? (
+                  <div className="flex items-center justify-between px-1">
+                    <div>
+                      <p className="text-sm font-medium text-white">{profile?.full_name}</p>
+                      <p className="text-xs text-bat-muted">{profile?.email}</p>
+                    </div>
+                    <button
+                      onClick={() => { signOut(); setMobileOpen(false); }}
+                      className="p-2 text-bat-muted hover:text-white rounded-lg transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => { onRequestAuth(); setMobileOpen(false); }}
+                      className="flex-1 py-2.5 text-sm font-medium text-bat-muted border border-bat-border rounded-xl hover:text-white hover:border-bat-border2 transition-all"
+                    >
+                      Sign In
+                    </button>
+                    <button
+                      onClick={() => { onRequestAuth(); setMobileOpen(false); }}
+                      className="flex-1 py-2.5 text-sm font-semibold text-black bg-white rounded-xl hover:bg-bat-accent transition-all"
+                    >
+                      Get Started
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <motion.div
+          key={currentPage}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          {children}
+        </motion.div>
       </main>
     </div>
   );

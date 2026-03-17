@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { Plus, Trash2, Youtube, Upload, X, Loader2, Zap, Image } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   ThumbnailStyle,
   ThumbnailEmotion,
@@ -146,9 +147,13 @@ export function ThumbnailForm({ onSubmit, loading, credits, plan, selectedModel,
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">
-          Video Title or Topic <span className="text-red-500">*</span>
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25 }}
+      >
+        <label className="block text-sm font-medium text-bat-accent mb-1.5">
+          Video Title or Topic <span className="text-red-400">*</span>
         </label>
         <input
           type="text"
@@ -156,12 +161,16 @@ export function ThumbnailForm({ onSubmit, loading, credits, plan, selectedModel,
           onChange={(e) => setTopic(e.target.value)}
           required
           placeholder="e.g. I quit my 9-5 to travel the world"
-          className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 py-2.5 bg-bat-bg border border-bat-border rounded-xl text-sm text-white placeholder:text-bat-subtle focus:outline-none focus:border-bat-border2"
         />
-      </div>
+      </motion.div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Thumbnail Style</label>
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25, delay: 0.04 }}
+      >
+        <label className="block text-sm font-medium text-bat-accent mb-2">Thumbnail Style</label>
         <div className="grid grid-cols-2 gap-2">
           {STYLE_OPTIONS.map(({ value, label, desc }) => (
             <button
@@ -170,21 +179,25 @@ export function ThumbnailForm({ onSubmit, loading, credits, plan, selectedModel,
               onClick={() => setStyle(value)}
               className={`px-3 py-2.5 rounded-lg text-sm font-medium border transition text-left ${
                 style === value
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+                  ? 'bg-white text-black border-white'
+                  : 'bg-bat-bg text-bat-muted border-bat-border hover:border-bat-border2'
               }`}
             >
               <span className="block">{label}</span>
-              <span className={`block text-xs mt-0.5 ${style === value ? 'text-blue-100' : 'text-gray-400'}`}>
+              <span className={`block text-xs mt-0.5 ${style === value ? 'text-black/60' : 'text-bat-subtle'}`}>
                 {desc}
               </span>
             </button>
           ))}
         </div>
-      </div>
+      </motion.div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Emotion</label>
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25, delay: 0.08 }}
+      >
+        <label className="block text-sm font-medium text-bat-accent mb-2">Emotion</label>
         <div className="flex gap-2">
           {EMOTION_OPTIONS.map(({ value, label }) => (
             <button
@@ -193,67 +206,80 @@ export function ThumbnailForm({ onSubmit, loading, credits, plan, selectedModel,
               onClick={() => setEmotion(value)}
               className={`flex-1 py-2.5 text-sm font-medium rounded-lg border transition ${
                 emotion === value
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+                  ? 'bg-white text-black border-white'
+                  : 'bg-bat-bg text-bat-muted border-bat-border hover:border-bat-border2'
               }`}
             >
               {label}
             </button>
           ))}
         </div>
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 gap-4">
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25, delay: 0.12 }}
+        className="grid grid-cols-1 gap-4"
+      >
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Color Theme <span className="text-gray-400 font-normal">(optional)</span>
+          <label className="block text-sm font-medium text-bat-accent mb-1.5">
+            Color Theme <span className="text-bat-subtle font-normal">(optional)</span>
           </label>
           <input
             type="text"
             value={colorTheme}
             onChange={(e) => setColorTheme(e.target.value)}
             placeholder="e.g. deep red and black, neon green"
-            className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2.5 bg-bat-bg border border-bat-border rounded-xl text-sm text-white placeholder:text-bat-subtle focus:outline-none focus:border-bat-border2"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Text Overlay <span className="text-gray-400 font-normal">(optional)</span>
+          <label className="block text-sm font-medium text-bat-accent mb-1.5">
+            Text Overlay <span className="text-bat-subtle font-normal">(optional)</span>
           </label>
           <input
             type="text"
             value={textOverlay}
             onChange={(e) => setTextOverlay(e.target.value)}
             placeholder='e.g. "AI TOOK MY JOB?"'
-            className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2.5 bg-bat-bg border border-bat-border rounded-xl text-sm text-white placeholder:text-bat-subtle focus:outline-none focus:border-bat-border2"
           />
         </div>
-      </div>
+      </motion.div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">
-          Extra Context <span className="text-gray-400 font-normal">(optional)</span>
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25, delay: 0.16 }}
+      >
+        <label className="block text-sm font-medium text-bat-accent mb-1.5">
+          Extra Context <span className="text-bat-subtle font-normal">(optional)</span>
         </label>
         <textarea
           rows={2}
           value={extraContext}
           onChange={(e) => setExtraContext(e.target.value)}
           placeholder="e.g. Show a shocked face, use dark background, include a money bag icon..."
-          className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+          className="w-full px-3 py-2.5 bg-bat-bg border border-bat-border rounded-xl text-sm text-white placeholder:text-bat-subtle focus:outline-none focus:border-bat-border2 resize-none"
         />
-      </div>
+      </motion.div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Inspiration <span className="text-gray-400 font-normal">(optional)</span>
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25, delay: 0.2 }}
+      >
+        <label className="block text-sm font-medium text-bat-accent mb-2">
+          Inspiration <span className="text-bat-subtle font-normal">(optional)</span>
         </label>
-        <div className="flex gap-1 mb-3 p-1 bg-gray-100 rounded-lg">
+        <div className="flex gap-1 mb-3 p-1 bg-bat-surface2 rounded-lg">
           <button
             type="button"
             onClick={() => setInspirationTab('urls')}
             className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-medium rounded-md transition ${
-              inspirationTab === 'urls' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+              inspirationTab === 'urls' ? 'bg-bat-bg text-white shadow-none' : 'text-bat-subtle hover:text-bat-muted'
             }`}
           >
             <Youtube className="w-3.5 h-3.5" />
@@ -263,7 +289,7 @@ export function ThumbnailForm({ onSubmit, loading, credits, plan, selectedModel,
             type="button"
             onClick={() => setInspirationTab('images')}
             className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-medium rounded-md transition ${
-              inspirationTab === 'images' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+              inspirationTab === 'images' ? 'bg-bat-bg text-white shadow-none' : 'text-bat-subtle hover:text-bat-muted'
             }`}
           >
             <Image className="w-3.5 h-3.5" />
@@ -271,95 +297,113 @@ export function ThumbnailForm({ onSubmit, loading, credits, plan, selectedModel,
           </button>
         </div>
 
-        {inspirationTab === 'urls' && (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">Up to 5 YouTube URLs</span>
-              {inspirationUrls.length < 5 && (
+        <AnimatePresence mode="wait">
+          {inspirationTab === 'urls' && (
+            <motion.div
+              key="urls"
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 4 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-2"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-bat-subtle">Up to 5 YouTube URLs</span>
+                {inspirationUrls.length < 5 && (
+                  <button
+                    type="button"
+                    onClick={addUrl}
+                    className="flex items-center gap-1 text-xs text-bat-muted hover:text-white font-medium transition"
+                  >
+                    <Plus className="w-3 h-3" />Add
+                  </button>
+                )}
+              </div>
+              {inspirationUrls.map((url, index) => (
+                <div key={index}>
+                  <div className="flex gap-2">
+                    <input
+                      type="url"
+                      value={url}
+                      onChange={(e) => updateUrl(index, e.target.value)}
+                      placeholder="https://youtube.com/watch?v=..."
+                      className={`flex-1 px-3 py-2 rounded-xl text-xs text-white placeholder:text-bat-subtle focus:outline-none focus:border-bat-border2 ${
+                        urlErrors[index]
+                          ? 'border border-red-500/20 bg-red-500/10'
+                          : 'border border-bat-border bg-bat-bg'
+                      }`}
+                    />
+                    {inspirationUrls.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeUrl(index)}
+                        className="p-2 text-bat-muted hover:text-red-400 hover:bg-bat-surface2 rounded-lg transition"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                  {urlErrors[index] && <p className="text-xs text-red-400 mt-1">{urlErrors[index]}</p>}
+                </div>
+              ))}
+            </motion.div>
+          )}
+
+          {inspirationTab === 'images' && (
+            <motion.div
+              key="images"
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 4 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-3"
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                multiple
+                onChange={handleFileUpload}
+                className="hidden"
+              />
+              {uploadedImages.length < 5 && (
                 <button
                   type="button"
-                  onClick={addUrl}
-                  className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-medium"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-bat-border rounded-lg text-sm text-bat-muted hover:border-bat-border2 hover:text-white transition"
                 >
-                  <Plus className="w-3 h-3" />Add
+                  <Upload className="w-4 h-4" />
+                  Upload thumbnails (JPG, PNG, WEBP — max 5MB each)
                 </button>
               )}
-            </div>
-            {inspirationUrls.map((url, index) => (
-              <div key={index}>
-                <div className="flex gap-2">
-                  <input
-                    type="url"
-                    value={url}
-                    onChange={(e) => updateUrl(index, e.target.value)}
-                    placeholder="https://youtube.com/watch?v=..."
-                    className={`flex-1 px-3 py-2 border rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      urlErrors[index] ? 'border-red-300 bg-red-50' : 'border-gray-200'
-                    }`}
-                  />
-                  {inspirationUrls.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeUrl(index)}
-                      className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  )}
+              {fileError && <p className="text-xs text-red-400">{fileError}</p>}
+              {uploadedImages.length > 0 && (
+                <div className="grid grid-cols-3 gap-2">
+                  {uploadedImages.map((img, index) => (
+                    <div key={index} className="relative group rounded-lg overflow-hidden bg-bat-surface2 aspect-video">
+                      <img
+                        src={img.dataUrl}
+                        alt={img.name}
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="absolute top-1 right-1 p-1 bg-black/60 text-white rounded-full opacity-0 group-hover:opacity-100 transition"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
                 </div>
-                {urlErrors[index] && <p className="text-xs text-red-500 mt-1">{urlErrors[index]}</p>}
-              </div>
-            ))}
-          </div>
-        )}
-
-        {inspirationTab === 'images' && (
-          <div className="space-y-3">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              multiple
-              onChange={handleFileUpload}
-              className="hidden"
-            />
-            {uploadedImages.length < 5 && (
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-300 rounded-lg text-sm text-gray-500 hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50 transition"
-              >
-                <Upload className="w-4 h-4" />
-                Upload thumbnails (JPG, PNG, WEBP — max 5MB each)
-              </button>
-            )}
-            {fileError && <p className="text-xs text-red-500">{fileError}</p>}
-            {uploadedImages.length > 0 && (
-              <div className="grid grid-cols-3 gap-2">
-                {uploadedImages.map((img, index) => (
-                  <div key={index} className="relative group rounded-lg overflow-hidden bg-gray-100 aspect-video">
-                    <img
-                      src={img.dataUrl}
-                      alt={img.name}
-                      className="w-full h-full object-cover"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeImage(index)}
-                      className="absolute top-1 right-1 p-1 bg-black/60 text-white rounded-full opacity-0 group-hover:opacity-100 transition"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-            <p className="text-xs text-gray-400">
-              {uploadedImages.length}/5 images uploaded
-            </p>
-          </div>
-        )}
-      </div>
+              )}
+              <p className="text-xs text-bat-subtle">
+                {uploadedImages.length}/5 images uploaded
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
 
       <ModelSelector
         feature="thumbnail"
@@ -369,18 +413,23 @@ export function ThumbnailForm({ onSubmit, loading, credits, plan, selectedModel,
         onUpgradeRequired={onUpgrade}
       />
 
-      <div className="pt-2 border-t border-gray-100">
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25, delay: 0.24 }}
+        className="pt-2 border-t border-bat-border"
+      >
         {plan !== 'free' && (
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <Zap className="w-4 h-4 text-amber-500" />
-              <span className="text-sm text-gray-600">
-                Cost: <span className="font-semibold text-gray-900">{creditCost} credits</span>
+              <Zap className="w-4 h-4 text-bat-muted" />
+              <span className="text-sm text-bat-muted">
+                Cost: <span className="font-semibold text-white">{creditCost} credits</span>
               </span>
-              <span className="text-sm text-gray-400">(Balance: {credits})</span>
+              <span className="text-sm text-bat-subtle">(Balance: {credits})</span>
             </div>
             {!canAfford && (
-              <span className="text-xs text-red-500 font-medium">Insufficient credits</span>
+              <span className="text-xs text-red-400 font-medium">Insufficient credits</span>
             )}
           </div>
         )}
@@ -388,7 +437,7 @@ export function ThumbnailForm({ onSubmit, loading, credits, plan, selectedModel,
         <button
           type="submit"
           disabled={loading || !canAfford}
-          className="w-full flex items-center justify-center gap-2 py-3 px-6 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-200 disabled:text-gray-400 text-white font-semibold rounded-xl transition"
+          className="w-full flex items-center justify-center gap-2 py-3 px-6 bg-white hover:bg-bat-accent disabled:bg-bat-surface2 disabled:text-bat-subtle text-black font-semibold rounded-xl transition"
         >
           {loading ? (
             <>
@@ -407,7 +456,7 @@ export function ThumbnailForm({ onSubmit, loading, credits, plan, selectedModel,
             </>
           )}
         </button>
-      </div>
+      </motion.div>
     </form>
   );
 }

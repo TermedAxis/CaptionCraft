@@ -53,11 +53,11 @@ export function ContentForm({ tab, values, onChange, onSubmit, loading, freeLimi
     <form onSubmit={onSubmit} className="space-y-5">
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Platform</label>
+          <label className="block text-sm font-medium text-bat-muted mb-1.5">Platform</label>
           <select
             value={values.platform}
             onChange={set("platform")}
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+            className="w-full px-4 py-2.5 bg-bat-bg border border-bat-border rounded-xl text-white focus:ring-0 focus:border-bat-border2 text-sm"
           >
             {platforms.map((p) => (
               <option key={p} value={p.toLowerCase().replace(" ", "-")}>{p}</option>
@@ -65,11 +65,11 @@ export function ContentForm({ tab, values, onChange, onSubmit, loading, freeLimi
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Tone</label>
+          <label className="block text-sm font-medium text-bat-muted mb-1.5">Tone</label>
           <select
             value={values.tone}
             onChange={set("tone")}
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+            className="w-full px-4 py-2.5 bg-bat-bg border border-bat-border rounded-xl text-white focus:ring-0 focus:border-bat-border2 text-sm"
           >
             {TONES.map((t) => (
               <option key={t} value={t.toLowerCase()}>{t}</option>
@@ -79,8 +79,8 @@ export function ContentForm({ tab, values, onChange, onSubmit, loading, freeLimi
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">
-          Topic / Theme <span className="text-red-500">*</span>
+        <label className="block text-sm font-medium text-bat-muted mb-1.5">
+          Topic / Theme <span className="text-red-400">*</span>
         </label>
         <textarea
           required
@@ -88,16 +88,16 @@ export function ContentForm({ tab, values, onChange, onSubmit, loading, freeLimi
           value={values.topic}
           onChange={set("topic")}
           placeholder={TOPIC_PLACEHOLDERS[tab]}
-          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm"
+          className="w-full px-4 py-2.5 bg-bat-bg border border-bat-border rounded-xl text-white placeholder:text-bat-subtle focus:ring-0 focus:border-bat-border2 resize-none text-sm"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">Goal</label>
+        <label className="block text-sm font-medium text-bat-muted mb-1.5">Goal</label>
         <select
           value={values.goal}
           onChange={set("goal")}
-          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+          className="w-full px-4 py-2.5 bg-bat-bg border border-bat-border rounded-xl text-white focus:ring-0 focus:border-bat-border2 text-sm"
         >
           <option value="">Select a goal (optional)</option>
           {GOALS[tab].map((g) => (
@@ -107,31 +107,31 @@ export function ContentForm({ tab, values, onChange, onSubmit, loading, freeLimi
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">Target Audience (Optional)</label>
+        <label className="block text-sm font-medium text-bat-muted mb-1.5">Target Audience (Optional)</label>
         <input
           type="text"
           value={values.targetAudience}
           onChange={set("targetAudience")}
           placeholder="e.g., Entrepreneurs aged 25-35, fitness enthusiasts..."
-          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+          className="w-full px-4 py-2.5 bg-bat-bg border border-bat-border rounded-xl text-white placeholder:text-bat-subtle focus:ring-0 focus:border-bat-border2 text-sm"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">Extra Context (Optional)</label>
+        <label className="block text-sm font-medium text-bat-muted mb-1.5">Extra Context (Optional)</label>
         <textarea
           rows={2}
           value={values.extraContext}
           onChange={set("extraContext")}
           placeholder="Any additional details, brand guidelines, or specific requirements..."
-          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm"
+          className="w-full px-4 py-2.5 bg-bat-bg border border-bat-border rounded-xl text-white placeholder:text-bat-subtle focus:ring-0 focus:border-bat-border2 resize-none text-sm"
         />
       </div>
 
       <button
         type="submit"
         disabled={loading || !values.topic.trim() || freeLimitReached}
-        className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        className="w-full bg-white text-black py-3 rounded-xl font-semibold hover:bg-bat-accent transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {loading ? (
           <>

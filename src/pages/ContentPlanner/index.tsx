@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../contexts/AuthContext";
 import { useCredits } from "../../hooks/useCredits";
@@ -180,24 +181,26 @@ export function ContentPlanner({ onRequestAuth, onUpgrade }: ContentPlannerProps
     <div className="max-w-7xl mx-auto">
       <div className="mb-8 flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Content Creator</h1>
-          <p className="text-gray-600">Plan and script your social media content with AI</p>
+          <h1 className="text-3xl font-bold text-white mb-2">Content Creator</h1>
+          <p className="text-bat-muted">Plan and script your social media content with AI</p>
         </div>
         {user && plan === "free" && freeChecked && (
           <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm ${
-            freeLimitReached ? "bg-red-50 text-red-700" : "bg-blue-50 text-blue-700"
+            freeLimitReached
+              ? "bg-red-500/10 border border-red-500/20 text-red-400"
+              : "bg-bat-surface border border-bat-border text-bat-muted"
           }`}>
             <AlertCircle className="w-4 h-4" />
             <span>Free: {freeUsed}/{freeLimit} posts used</span>
             {freeLimitReached && (
-              <button onClick={onUpgrade} className="underline font-semibold">Upgrade</button>
+              <button onClick={onUpgrade} className="underline font-semibold text-white">Upgrade</button>
             )}
           </div>
         )}
         {user && plan !== "free" && (
-          <div className="flex items-center gap-1.5 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
-            <Zap className="w-4 h-4 text-amber-500" />
-            <span className="text-sm font-semibold text-amber-700">{credits.toLocaleString()} credits</span>
+          <div className="flex items-center gap-1.5 px-3 py-2 bg-bat-surface border border-bat-border rounded-lg">
+            <Zap className="w-4 h-4 text-bat-muted" />
+            <span className="text-sm font-semibold text-white">{credits.toLocaleString()} credits</span>
           </div>
         )}
       </div>
@@ -209,23 +212,23 @@ export function ContentPlanner({ onRequestAuth, onUpgrade }: ContentPlannerProps
             onClick={() => handleTabChange(id)}
             className={`flex-1 flex flex-col items-center gap-2 px-4 py-4 rounded-xl border-2 transition-all ${
               tab === id
-                ? "border-blue-600 bg-blue-50 text-blue-700"
-                : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50"
+                ? "border-bat-border2 bg-white/10 text-white"
+                : "border-bat-border bg-bat-bg text-bat-muted hover:border-bat-border2 hover:text-white"
             }`}
           >
-            <Icon className={`w-6 h-6 ${tab === id ? "text-blue-600" : "text-gray-400"}`} />
+            <Icon className={`w-6 h-6 ${tab === id ? "text-white" : "text-bat-subtle"}`} />
             <div className="text-center">
-              <p className={`text-sm font-semibold ${tab === id ? "text-blue-700" : "text-gray-800"}`}>{label}</p>
-              <p className="text-xs text-gray-500 hidden sm:block">{description}</p>
+              <p className={`text-sm font-semibold ${tab === id ? "text-white" : "text-bat-muted"}`}>{label}</p>
+              <p className="text-xs text-bat-subtle hidden sm:block">{description}</p>
             </div>
           </button>
         ))}
       </div>
 
       <div className="grid lg:grid-cols-2 gap-8">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="bg-bat-surface rounded-xl border border-bat-border p-6">
           {error && (
-            <div className="flex items-start gap-2 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-5">
+            <div className="flex items-start gap-2 bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-lg text-sm mb-5">
               <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
               {error}
             </div>
@@ -238,7 +241,7 @@ export function ContentPlanner({ onRequestAuth, onUpgrade }: ContentPlannerProps
             loading={loading}
             freeLimitReached={freeLimitReached}
           />
-          <div className="mt-4 pt-4 border-t border-gray-100 space-y-3">
+          <div className="mt-4 pt-4 border-t border-bat-border space-y-3">
             <ModelSelector
               feature="post"
               plan={plan}
@@ -248,11 +251,11 @@ export function ContentPlanner({ onRequestAuth, onUpgrade }: ContentPlannerProps
             />
             {plan !== "free" && (
               <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-1.5 text-gray-600">
-                  <Zap className="w-4 h-4 text-amber-500" />
-                  Cost: <span className="font-semibold text-gray-900 ml-1">{creditCost} credits</span>
+                <div className="flex items-center gap-1.5 text-bat-muted">
+                  <Zap className="w-4 h-4 text-bat-muted" />
+                  Cost: <span className="font-semibold text-white ml-1">{creditCost} credits</span>
                 </div>
-                <span className="text-gray-400">Balance: {credits}</span>
+                <span className="text-bat-subtle">Balance: {credits}</span>
               </div>
             )}
           </div>
@@ -260,31 +263,35 @@ export function ContentPlanner({ onRequestAuth, onUpgrade }: ContentPlannerProps
 
         <div>
           {!result && !loading && (
-            <div className="bg-gray-50 rounded-xl border-2 border-dashed border-gray-300 p-12 text-center h-full flex flex-col items-center justify-center">
-              <Wand2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600 font-medium">Your content plan will appear here</p>
-              <p className="text-gray-400 text-sm mt-1">Fill in the form and hit generate</p>
+            <div className="bg-bat-surface rounded-xl border-2 border-dashed border-bat-border p-12 text-center h-full flex flex-col items-center justify-center">
+              <Wand2 className="w-12 h-12 text-bat-subtle mx-auto mb-4" />
+              <p className="text-bat-muted font-medium">Your content plan will appear here</p>
+              <p className="text-bat-subtle text-sm mt-1">Fill in the form and hit generate</p>
             </div>
           )}
 
           {loading && (
-            <div className="bg-gray-50 rounded-xl border-2 border-dashed border-gray-300 p-12 text-center h-full flex flex-col items-center justify-center">
-              <div className="w-10 h-10 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-              <p className="text-gray-600 font-medium">Crafting your content plan...</p>
-              <p className="text-gray-400 text-sm mt-1">This may take a moment</p>
+            <div className="bg-bat-surface rounded-xl border-2 border-dashed border-bat-border p-12 text-center h-full flex flex-col items-center justify-center">
+              <div className="w-10 h-10 border-2 border-white/20 border-t-white rounded-full animate-spin mx-auto mb-4" />
+              <p className="text-bat-muted font-medium">Crafting your content plan...</p>
+              <p className="text-bat-subtle text-sm mt-1">This may take a moment</p>
             </div>
           )}
 
           {result && !loading && (
-            <div>
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
               <div className="flex items-center justify-between mb-4">
-                <span className="text-sm font-medium text-gray-500">{RESULT_LABELS[resultTab]}</span>
+                <span className="text-sm font-medium text-bat-muted">{RESULT_LABELS[resultTab]}</span>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handleCopy}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-bat-muted bg-bat-surface border border-bat-border rounded-lg hover:border-bat-border2 transition"
                   >
-                    {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
+                    {copied ? <Check className="w-4 h-4 text-white" /> : <Copy className="w-4 h-4" />}
                     {copied ? "Copied" : "Copy"}
                   </button>
                   <button
@@ -292,8 +299,8 @@ export function ContentPlanner({ onRequestAuth, onUpgrade }: ContentPlannerProps
                     disabled={saved}
                     className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg border transition ${
                       saved
-                        ? "bg-green-50 text-green-700 border-green-200"
-                        : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
+                        ? "bg-white/10 text-white border-white/20"
+                        : "bg-bat-surface text-bat-muted border-bat-border hover:border-bat-border2"
                     }`}
                   >
                     {saved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
@@ -306,7 +313,7 @@ export function ContentPlanner({ onRequestAuth, onUpgrade }: ContentPlannerProps
               {resultTab === "carousel" && <CarouselResult result={result as CarouselResultType} />}
               {resultTab === "video" && <VideoResult result={result as VideoResultType} />}
               {resultTab === "thread" && <ThreadResult result={result as ThreadResultType} />}
-            </div>
+            </motion.div>
           )}
         </div>
       </div>
