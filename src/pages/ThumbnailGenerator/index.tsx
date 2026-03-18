@@ -166,8 +166,8 @@ export function ThumbnailGenerator({ onRequestAuth, onUpgrade }: ThumbnailGenera
         )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6 items-start">
-        <div className="bg-white rounded-2xl border border-gray-200 p-6 h-fit">
+      <div className="grid grid-cols-1 lg:grid-cols-[480px_1fr] gap-8 items-start">
+        <div className="bg-white rounded-2xl border border-gray-200 p-8 h-fit">
           <ThumbnailForm
             onSubmit={handleGenerate}
             loading={loading}

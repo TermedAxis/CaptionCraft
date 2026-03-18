@@ -98,16 +98,16 @@ export function ScriptForm({ onSubmit, loading, credits, plan, selectedModel, on
   const lengthEntries = Object.entries(LENGTH_LABELS) as [ScriptLength, string][];
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Platform</label>
-        <div className="grid grid-cols-2 gap-2">
+        <label className="block text-sm font-medium text-gray-700 mb-2.5">Platform</label>
+        <div className="grid grid-cols-2 gap-3">
           {PLATFORMS.map(({ value, label }) => (
             <button
               key={value}
               type="button"
               onClick={() => setPlatform(value)}
-              className={`px-3 py-2 rounded-lg text-sm font-medium border transition truncate ${
+              className={`px-4 py-2.5 rounded-lg text-sm font-medium border transition truncate ${
                 platform === value
                   ? 'bg-blue-600 text-white border-blue-600'
                   : 'bg-white text-gray-700 border-gray-200 hover:border-blue-300 hover:bg-blue-50'
@@ -120,7 +120,7 @@ export function ScriptForm({ onSubmit, loading, credits, plan, selectedModel, on
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
           Topic <span className="text-red-500">*</span>
         </label>
         <input
@@ -129,12 +129,12 @@ export function ScriptForm({ onSubmit, loading, credits, plan, selectedModel, on
           onChange={(e) => setTopic(e.target.value)}
           required
           placeholder="e.g. 10 productivity hacks for remote workers"
-          className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
           Target Audience <span className="text-red-500">*</span>
         </label>
         <input
@@ -142,14 +142,14 @@ export function ScriptForm({ onSubmit, loading, credits, plan, selectedModel, on
           value={targetAudience}
           onChange={(e) => setTargetAudience(e.target.value)}
           required
-          placeholder="e.g. Entrepreneurs aged 25–35"
-          className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          placeholder="e.g. Entrepreneurs aged 25-35"
+          className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Script Length</label>
-        <div className="grid grid-cols-2 gap-2">
+        <label className="block text-sm font-medium text-gray-700 mb-2.5">Script Length</label>
+        <div className="grid grid-cols-2 gap-3">
           {lengthEntries.map(([value, label]) => {
             const [name, range] = label.includes('(') ? label.split(' (') : [label, null];
             return (
@@ -157,7 +157,7 @@ export function ScriptForm({ onSubmit, loading, credits, plan, selectedModel, on
                 key={value}
                 type="button"
                 onClick={() => setLength(value)}
-                className={`px-3 py-2.5 rounded-lg text-sm font-medium border transition text-left ${
+                className={`px-4 py-3 rounded-lg text-sm font-medium border transition text-left ${
                   length === value
                     ? 'bg-blue-600 text-white border-blue-600'
                     : 'bg-white text-gray-700 border-gray-200 hover:border-blue-300 hover:bg-blue-50'
@@ -165,7 +165,7 @@ export function ScriptForm({ onSubmit, loading, credits, plan, selectedModel, on
               >
                 <span className="block font-semibold leading-tight">{name}</span>
                 {range && (
-                  <span className={`block text-xs mt-0.5 leading-tight ${length === value ? 'text-blue-100' : 'text-gray-400'}`}>
+                  <span className={`block text-xs mt-1 leading-tight ${length === value ? 'text-blue-100' : 'text-gray-400'}`}>
                     {range.replace(')', '')}
                   </span>
                 )}
@@ -176,21 +176,21 @@ export function ScriptForm({ onSubmit, loading, credits, plan, selectedModel, on
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Tone</label>
-        <div className="grid grid-cols-2 gap-2">
+        <label className="block text-sm font-medium text-gray-700 mb-2.5">Tone</label>
+        <div className="grid grid-cols-2 gap-3">
           {TONES.map(({ value, label, desc }) => (
             <button
               key={value}
               type="button"
               onClick={() => setTone(value)}
-              className={`px-3 py-2 rounded-lg text-sm font-medium border transition text-left ${
+              className={`px-4 py-3 rounded-lg text-sm font-medium border transition text-left ${
                 tone === value
                   ? 'bg-blue-600 text-white border-blue-600'
                   : 'bg-white text-gray-700 border-gray-200 hover:border-blue-300 hover:bg-blue-50'
               }`}
             >
               <span className="block leading-tight">{label}</span>
-              <span className={`block text-xs mt-0.5 leading-tight ${tone === value ? 'text-blue-100' : 'text-gray-400'}`}>
+              <span className={`block text-xs mt-1 leading-tight ${tone === value ? 'text-blue-100' : 'text-gray-400'}`}>
                 {desc}
               </span>
             </button>
@@ -199,7 +199,7 @@ export function ScriptForm({ onSubmit, loading, credits, plan, selectedModel, on
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
           Call to Action <span className="text-gray-400 font-normal text-xs">(optional)</span>
         </label>
         <input
@@ -207,32 +207,32 @@ export function ScriptForm({ onSubmit, loading, credits, plan, selectedModel, on
           value={cta}
           onChange={(e) => setCta(e.target.value)}
           placeholder="e.g. Subscribe for more tips"
-          className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
           Extra Context <span className="text-gray-400 font-normal text-xs">(optional)</span>
         </label>
         <textarea
-          rows={2}
+          rows={3}
           value={extraContext}
           onChange={(e) => setExtraContext(e.target.value)}
           placeholder="e.g. Include a personal story, reference recent news, avoid mentioning competitors..."
-          className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+          className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Variations</label>
-        <div className="flex gap-2">
+        <label className="block text-sm font-medium text-gray-700 mb-2.5">Variations</label>
+        <div className="flex gap-3">
           {[1, 2, 3].map((n) => (
             <button
               key={n}
               type="button"
               onClick={() => setVariations(n)}
-              className={`flex-1 py-2.5 rounded-lg text-sm font-medium border transition ${
+              className={`flex-1 py-3 rounded-lg text-sm font-medium border transition ${
                 variations === n
                   ? 'bg-blue-600 text-white border-blue-600'
                   : 'bg-white text-gray-700 border-gray-200 hover:border-blue-300 hover:bg-blue-50'
@@ -245,8 +245,8 @@ export function ScriptForm({ onSubmit, loading, credits, plan, selectedModel, on
       </div>
 
       <div>
-        <div className="flex items-center justify-between mb-2">
-          <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
+        <div className="flex items-center justify-between mb-2.5">
+          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
             <Youtube className="w-4 h-4 text-red-500" />
             Inspiration Videos
             <span className="text-gray-400 font-normal text-xs">(optional)</span>
@@ -262,16 +262,16 @@ export function ScriptForm({ onSubmit, loading, credits, plan, selectedModel, on
             </button>
           )}
         </div>
-        <div className="space-y-2">
+        <div className="space-y-3">
           {inspirationUrls.map((url, index) => (
             <div key={index}>
-              <div className="flex gap-2">
+              <div className="flex gap-3">
                 <input
                   type="url"
                   value={url}
                   onChange={(e) => updateUrl(index, e.target.value)}
                   placeholder="https://youtube.com/watch?v=..."
-                  className={`flex-1 px-3 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  className={`flex-1 px-4 py-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                     urlErrors[index] ? 'border-red-300 bg-red-50' : 'border-gray-200'
                   }`}
                 />
@@ -279,19 +279,19 @@ export function ScriptForm({ onSubmit, loading, credits, plan, selectedModel, on
                   <button
                     type="button"
                     onClick={() => removeUrl(index)}
-                    className="p-2.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition"
+                    className="p-3 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 )}
               </div>
               {urlErrors[index] && (
-                <p className="text-xs text-red-500 mt-1">{urlErrors[index]}</p>
+                <p className="text-xs text-red-500 mt-1.5">{urlErrors[index]}</p>
               )}
             </div>
           ))}
         </div>
-        <p className="text-xs text-gray-400 mt-1.5">
+        <p className="text-xs text-gray-400 mt-2">
           AI uses these transcripts as style inspiration
         </p>
       </div>
@@ -304,9 +304,9 @@ export function ScriptForm({ onSubmit, loading, credits, plan, selectedModel, on
         onUpgradeRequired={onUpgrade}
       />
 
-      <div className="pt-3 border-t border-gray-100">
+      <div className="pt-4 border-t border-gray-100">
         {plan !== 'free' && (
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Zap className="w-4 h-4 text-amber-500" />
               <span className="text-sm text-gray-600">
@@ -323,7 +323,7 @@ export function ScriptForm({ onSubmit, loading, credits, plan, selectedModel, on
         <button
           type="submit"
           disabled={loading || !canAfford}
-          className="w-full flex items-center justify-center gap-2 py-3 px-6 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-200 disabled:text-gray-400 text-white font-semibold rounded-xl transition"
+          className="w-full flex items-center justify-center gap-2 py-3.5 px-6 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-200 disabled:text-gray-400 text-white font-semibold rounded-xl transition"
         >
           {loading ? (
             <>

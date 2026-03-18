@@ -222,8 +222,8 @@ export function ContentPlanner({ onRequestAuth, onUpgrade }: ContentPlannerProps
         ))}
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-8">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <div className="grid lg:grid-cols-[520px_1fr] gap-8 items-start">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
           {error && (
             <div className="flex items-start gap-2 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-5">
               <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
@@ -238,7 +238,7 @@ export function ContentPlanner({ onRequestAuth, onUpgrade }: ContentPlannerProps
             loading={loading}
             freeLimitReached={freeLimitReached}
           />
-          <div className="mt-4 pt-4 border-t border-gray-100 space-y-3">
+          <div className="mt-5 pt-5 border-t border-gray-100 space-y-4">
             <ModelSelector
               feature="post"
               plan={plan}
