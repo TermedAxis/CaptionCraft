@@ -6,7 +6,7 @@ export function Landing({ onGetStarted }: { onGetStarted: () => void }) {
       <nav className="container mx-auto px-6 py-6 flex justify-between items-center">
         <div className="flex items-center gap-2">
           <Sparkles className="w-8 h-8 text-blue-600" />
-          <span className="text-2xl font-bold text-gray-900">CaptionCraft</span>
+          <span className="text-2xl font-bold text-gray-900">Media Wizard</span>
         </div>
         <button
           onClick={onGetStarted}

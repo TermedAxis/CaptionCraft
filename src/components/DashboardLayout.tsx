@@ -58,7 +58,7 @@ export function DashboardLayout({ children, currentPage, onNavigate, onRequestAu
             <div className="flex items-center gap-8">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-7 h-7 text-blue-600" />
-                <span className="text-xl font-bold text-gray-900">CaptionCraft</span>
+                <span className="text-xl font-bold text-gray-900">Media Wizard</span>
               </div>
 
               <div className="hidden md:flex items-center gap-1">

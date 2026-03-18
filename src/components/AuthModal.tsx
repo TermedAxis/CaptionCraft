@@ -59,7 +59,7 @@ export function AuthModal({ onClose, message }: AuthModalProps) {
         <div className="text-center mb-6">
           <div className="flex items-center justify-center gap-2 mb-4">
             <Sparkles className="w-6 h-6 text-blue-600" />
-            <span className="text-lg font-bold text-gray-900">CaptionCraft</span>
+            <span className="text-lg font-bold text-gray-900">Media Wizard</span>
           </div>
           {message && (
             <p className="text-sm text-blue-600 bg-blue-50 border border-blue-100 rounded-lg px-4 py-2.5 mb-4">
