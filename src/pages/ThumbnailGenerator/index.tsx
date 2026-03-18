@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Image as ImageIcon, Zap, AlertCircle } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCredits } from '../../hooks/useCredits';
 import { supabase } from '../../lib/supabase';
@@ -138,49 +137,37 @@ export function ThumbnailGenerator({ onRequestAuth, onUpgrade }: ThumbnailGenera
 
   return (
     <div className="max-w-6xl mx-auto">
-      <motion.div
-        initial={{ opacity: 0, y: -8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="flex items-center justify-between mb-6"
-      >
+      <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-bat-surface2 rounded-xl border border-bat-border">
-            <ImageIcon className="w-6 h-6 text-bat-accent" />
+          <div className="p-2.5 bg-blue-100 rounded-xl">
+            <ImageIcon className="w-6 h-6 text-blue-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white">Thumbnail Generator</h1>
-            <p className="text-sm text-bat-muted">Generate YouTube thumbnails that get clicks</p>
+            <h1 className="text-2xl font-bold text-gray-900">Thumbnail Generator</h1>
+            <p className="text-sm text-gray-500">Generate YouTube thumbnails that get clicks</p>
           </div>
         </div>
         {user && plan === 'free' && freeChecked && (
           <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm ${
-            freeLimitReached
-              ? 'bg-red-500/10 border border-red-500/20 text-red-400'
-              : 'bg-bat-surface2 border border-bat-border text-bat-muted'
+            freeLimitReached ? 'bg-red-50 text-red-700' : 'bg-blue-50 text-blue-700'
           }`}>
             <AlertCircle className="w-4 h-4" />
             <span>Free: {freeUsed}/{freeLimit} thumbnail used</span>
             {freeLimitReached && (
-              <button onClick={onUpgrade} className="underline font-semibold text-red-400">Upgrade</button>
+              <button onClick={onUpgrade} className="underline font-semibold">Upgrade</button>
             )}
           </div>
         )}
         {user && plan !== 'free' && (
-          <div className="flex items-center gap-1.5 px-3 py-2 bg-bat-surface2 border border-bat-border rounded-lg">
-            <Zap className="w-4 h-4 text-bat-muted" />
-            <span className="text-sm font-semibold text-bat-muted">{credits.toLocaleString()} credits</span>
+          <div className="flex items-center gap-1.5 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
+            <Zap className="w-4 h-4 text-amber-500" />
+            <span className="text-sm font-semibold text-amber-700">{credits.toLocaleString()} credits</span>
           </div>
         )}
-      </motion.div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6 items-start">
-        <motion.div
-          initial={{ opacity: 0, x: -12 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.35, delay: 0.05 }}
-          className="bg-bat-surface rounded-2xl border border-bat-border p-6 h-fit"
-        >
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 h-fit">
           <ThumbnailForm
             onSubmit={handleGenerate}
             loading={loading}
@@ -191,70 +178,42 @@ export function ThumbnailGenerator({ onRequestAuth, onUpgrade }: ThumbnailGenera
             onUpgrade={onUpgrade}
             freeLimitReached={freeLimitReached}
           />
-        </motion.div>
+        </div>
 
         <div className="space-y-4">
-          <AnimatePresence mode="wait">
-            {error && (
-              <motion.div
-                key="error"
-                initial={{ opacity: 0, y: -6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.25 }}
-                className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-sm text-red-400 flex items-start gap-2"
-              >
-                <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
-                {error}
-              </motion.div>
-            )}
+          {error && (
+            <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+              {error}
+            </div>
+          )}
 
-            {loading && (
-              <motion.div
-                key="loading"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.25 }}
-                className="flex flex-col items-center justify-center py-20 text-bat-muted"
-              >
-                <div className="relative mb-4">
-                  <div className="w-12 h-12 border-4 border-white/20 rounded-full" />
-                  <div className="w-12 h-12 border-4 border-t-white border-white/20 rounded-full animate-spin absolute inset-0" />
-                </div>
-                <p className="text-sm font-medium text-bat-muted">Generating thumbnails...</p>
-                <p className="text-xs text-bat-subtle mt-1">Creating 3 options for you</p>
-              </motion.div>
-            )}
+          {loading && (
+            <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+              <div className="relative mb-4">
+                <div className="w-12 h-12 border-4 border-blue-100 rounded-full" />
+                <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin absolute inset-0" />
+              </div>
+              <p className="text-sm font-medium text-gray-600">Generating thumbnails...</p>
+              <p className="text-xs text-gray-400 mt-1">Creating 3 options for you</p>
+            </div>
+          )}
 
-            {!loading && imageUrls.length > 0 && (
-              <motion.div
-                key="results"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.35 }}
-                className="bg-bat-surface rounded-2xl border border-bat-border p-6"
-              >
-                <ThumbnailResult imageUrls={imageUrls} onRegenerate={handleRegenerate} loading={loading} />
-              </motion.div>
-            )}
+          {!loading && imageUrls.length > 0 && (
+            <div className="bg-white rounded-2xl border border-gray-200 p-6">
+              <ThumbnailResult imageUrls={imageUrls} onRegenerate={handleRegenerate} loading={loading} />
+            </div>
+          )}
 
-            {!loading && imageUrls.length === 0 && !error && (
-              <motion.div
-                key="empty"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3, delay: 0.1 }}
-                className="flex flex-col items-center justify-center py-20 text-center"
-              >
-                <div className="p-4 bg-bat-surface border border-bat-border rounded-2xl mb-4">
-                  <ImageIcon className="w-8 h-8 text-bat-subtle" />
-                </div>
-                <p className="text-sm font-medium text-bat-muted">Your thumbnails will appear here</p>
-                <p className="text-xs text-bat-subtle mt-1">3 options will be generated at once</p>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {!loading && imageUrls.length === 0 && !error && (
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <div className="p-4 bg-gray-100 rounded-2xl mb-4">
+                <ImageIcon className="w-8 h-8 text-gray-400" />
+              </div>
+              <p className="text-sm font-medium text-gray-600">Your thumbnails will appear here</p>
+              <p className="text-xs text-gray-400 mt-1">3 options will be generated at once</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

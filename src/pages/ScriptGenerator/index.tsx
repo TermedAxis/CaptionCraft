@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { ScrollText, Zap, AlertCircle } from 'lucide-react';
-import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCredits } from '../../hooks/useCredits';
 import { supabase } from '../../lib/supabase';
@@ -158,37 +157,35 @@ export function ScriptGenerator({ onRequestAuth, onUpgrade }: ScriptGeneratorPro
     <div className="max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-bat-surface2 border border-bat-border rounded-xl">
-            <ScrollText className="w-6 h-6 text-white" />
+          <div className="p-2.5 bg-blue-100 rounded-xl">
+            <ScrollText className="w-6 h-6 text-blue-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white">Script Generator</h1>
-            <p className="text-sm text-bat-muted">Generate video scripts for any platform</p>
+            <h1 className="text-2xl font-bold text-gray-900">Script Generator</h1>
+            <p className="text-sm text-gray-500">Generate video scripts for any platform</p>
           </div>
         </div>
         {user && plan === 'free' && freeChecked && (
           <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm ${
-            freeLimitReached
-              ? 'bg-red-500/10 border border-red-500/20 text-red-400'
-              : 'bg-bat-surface2 border border-bat-border text-bat-muted'
+            freeLimitReached ? 'bg-red-50 text-red-700' : 'bg-blue-50 text-blue-700'
           }`}>
             <AlertCircle className="w-4 h-4" />
             <span>Free: {freeUsed}/{freeLimit} scripts used</span>
             {freeLimitReached && (
-              <button onClick={onUpgrade} className="underline font-semibold text-bat-muted">Upgrade</button>
+              <button onClick={onUpgrade} className="underline font-semibold">Upgrade</button>
             )}
           </div>
         )}
         {user && plan !== 'free' && (
-          <div className="flex items-center gap-1.5 px-3 py-2 bg-bat-surface2 border border-bat-border rounded-lg">
-            <Zap className="w-4 h-4 text-bat-muted" />
-            <span className="text-sm font-semibold text-bat-muted">{credits.toLocaleString()} credits</span>
+          <div className="flex items-center gap-1.5 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
+            <Zap className="w-4 h-4 text-amber-500" />
+            <span className="text-sm font-semibold text-amber-700">{credits.toLocaleString()} credits</span>
           </div>
         )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6 items-start">
-        <div className="bg-bat-surface border border-bat-border rounded-2xl p-6 h-fit">
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 h-fit">
           <ScriptForm
             onSubmit={handleGenerate}
             loading={loading}
@@ -203,44 +200,34 @@ export function ScriptGenerator({ onRequestAuth, onUpgrade }: ScriptGeneratorPro
 
         <div className="space-y-4">
           {error && (
-            <motion.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-sm text-red-400 flex items-start gap-2"
-            >
+            <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 flex items-start gap-2">
               <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
               {error}
-            </motion.div>
+            </div>
           )}
 
           {loading && (
-            <div className="flex flex-col items-center justify-center py-20 text-bat-muted">
+            <div className="flex flex-col items-center justify-center py-20 text-gray-400">
               <div className="relative mb-4">
-                <div className="w-12 h-12 border-4 border-white/20 rounded-full" />
-                <div className="w-12 h-12 border-4 border-t-white border-white/20 rounded-full animate-spin absolute inset-0" />
+                <div className="w-12 h-12 border-4 border-blue-100 rounded-full" />
+                <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin absolute inset-0" />
               </div>
-              <p className="text-sm font-medium text-bat-muted">Writing your script...</p>
-              <p className="text-xs text-bat-subtle mt-1">This may take a moment</p>
+              <p className="text-sm font-medium text-gray-600">Writing your script...</p>
+              <p className="text-xs text-gray-400 mt-1">This may take a moment</p>
             </div>
           )}
 
           {!loading && variations.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <ScriptResult variations={variations} onCutDown={handleCutDown} cuttingDown={cuttingDown} />
-            </motion.div>
+            <ScriptResult variations={variations} onCutDown={handleCutDown} cuttingDown={cuttingDown} />
           )}
 
           {!loading && variations.length === 0 && !error && (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-              <div className="p-4 bg-bat-surface border border-bat-border rounded-2xl mb-4">
-                <ScrollText className="w-8 h-8 text-bat-subtle" />
+              <div className="p-4 bg-gray-100 rounded-2xl mb-4">
+                <ScrollText className="w-8 h-8 text-gray-400" />
               </div>
-              <p className="text-sm font-medium text-bat-muted">Your script will appear here</p>
-              <p className="text-xs text-bat-subtle mt-1">Fill in the form and click Generate</p>
+              <p className="text-sm font-medium text-gray-600">Your script will appear here</p>
+              <p className="text-xs text-gray-400 mt-1">Fill in the form and click Generate</p>
             </div>
           )}
         </div>

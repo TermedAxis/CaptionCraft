@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { supabase, Caption } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { Copy, Check, Trash2, Filter } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 interface SavedCaptionsProps {
   onRequestAuth: (message?: string) => void;
@@ -72,42 +71,32 @@ export function SavedCaptions({ onRequestAuth: _onRequestAuth }: SavedCaptionsPr
 
   if (!user) {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="max-w-5xl mx-auto"
-      >
+      <div className="max-w-5xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Saved Captions</h1>
-          <p className="text-bat-muted">Access all your generated captions</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Saved Captions</h1>
+          <p className="text-gray-600">Access all your generated captions</p>
         </div>
-        <div className="bg-bat-surface border-2 border-dashed border-bat-border rounded-xl p-16 text-center">
-          <p className="text-bat-muted font-medium mb-2">Sign in to view your saved captions</p>
-          <p className="text-sm text-bat-subtle">Your saved content will appear here after signing in</p>
+        <div className="bg-gray-50 rounded-xl border-2 border-dashed border-gray-300 p-16 text-center">
+          <p className="text-gray-600 font-medium mb-2">Sign in to view your saved captions</p>
+          <p className="text-sm text-gray-400">Your saved content will appear here after signing in</p>
         </div>
-      </motion.div>
+      </div>
     );
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="max-w-5xl mx-auto"
-    >
+    <div className="max-w-5xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Saved Captions</h1>
-        <p className="text-bat-muted">Access all your generated captions</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Saved Captions</h1>
+        <p className="text-gray-600">Access all your generated captions</p>
       </div>
 
       <div className="mb-6 flex items-center gap-3">
-        <Filter className="w-5 h-5 text-bat-muted" />
+        <Filter className="w-5 h-5 text-gray-400" />
         <select
           value={selectedPlatform}
           onChange={(e) => setSelectedPlatform(e.target.value)}
-          className="px-4 py-2 bg-bat-bg border border-bat-border rounded-xl text-white focus:outline-none focus:border-bat-border2"
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         >
           <option value="all">All Platforms</option>
           <option value="instagram">Instagram</option>
@@ -116,88 +105,74 @@ export function SavedCaptions({ onRequestAuth: _onRequestAuth }: SavedCaptionsPr
           <option value="twitter">Twitter</option>
           <option value="youtube">YouTube Shorts</option>
         </select>
-        <span className="text-sm text-bat-muted">
+        <span className="text-sm text-gray-600">
           {captions.length} {captions.length === 1 ? 'caption' : 'captions'}
         </span>
       </div>
 
       {loading ? (
         <div className="text-center py-12">
-          <div className="inline-block w-8 h-8 rounded-full border-4 border-white/20 border-t-white animate-spin" />
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
         </div>
       ) : captions.length === 0 ? (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-          className="bg-bat-surface border-2 border-dashed border-bat-border rounded-xl p-12 text-center"
-        >
-          <p className="text-bat-muted mb-4">No saved captions yet</p>
-          <p className="text-sm text-bat-subtle">Generate and save captions to see them here</p>
-        </motion.div>
+        <div className="bg-gray-50 rounded-xl border-2 border-dashed border-gray-300 p-12 text-center">
+          <p className="text-gray-600 mb-4">No saved captions yet</p>
+          <p className="text-sm text-gray-500">Generate and save captions to see them here</p>
+        </div>
       ) : (
         <div className="space-y-4">
-          <AnimatePresence>
-            {captions.map((caption, i) => (
-              <motion.div
-                key={caption.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.25, delay: i * 0.04 }}
-                className="bg-bat-surface rounded-xl border border-bat-border p-6"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <span className="px-3 py-1 bg-bat-surface2 text-white text-xs font-semibold rounded-full capitalize border border-bat-border">
-                      {caption.platform}
-                    </span>
-                    <span className="px-3 py-1 bg-bat-surface2 text-bat-muted text-xs font-medium rounded-full capitalize border border-bat-border">
-                      {caption.tone}
-                    </span>
-                    <span className="text-xs text-bat-subtle">{formatDate(caption.created_at)}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => handleCopy(caption.id, caption.caption_text, caption.hashtags)}
-                      className="p-2 text-bat-muted hover:text-white hover:bg-bat-surface2 rounded-lg transition"
-                      title="Copy to clipboard"
-                    >
-                      {copiedId === caption.id ? (
-                        <Check className="w-5 h-5 text-green-400" />
-                      ) : (
-                        <Copy className="w-5 h-5" />
-                      )}
-                    </button>
-                    <button
-                      onClick={() => handleDelete(caption.id)}
-                      className="p-2 text-bat-muted hover:text-red-400 hover:bg-bat-surface2 rounded-lg transition"
-                      title="Delete caption"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
-                  </div>
+          {captions.map((caption) => (
+            <div key={caption.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <span className="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-semibold rounded-full capitalize">
+                    {caption.platform}
+                  </span>
+                  <span className="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full capitalize">
+                    {caption.tone}
+                  </span>
+                  <span className="text-xs text-gray-500">{formatDate(caption.created_at)}</span>
                 </div>
-
-                <div className="mb-3">
-                  <p className="text-sm font-medium text-bat-subtle mb-1">Topic:</p>
-                  <p className="text-white">{caption.topic}</p>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleCopy(caption.id, caption.caption_text, caption.hashtags)}
+                    className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition"
+                    title="Copy to clipboard"
+                  >
+                    {copiedId === caption.id ? (
+                      <Check className="w-5 h-5 text-green-600" />
+                    ) : (
+                      <Copy className="w-5 h-5" />
+                    )}
+                  </button>
+                  <button
+                    onClick={() => handleDelete(caption.id)}
+                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+                    title="Delete caption"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
                 </div>
+              </div>
 
-                <div className="bg-bat-surface2 border border-bat-border rounded-xl p-4 mb-3">
-                  <p className="text-white whitespace-pre-wrap">{caption.caption_text}</p>
+              <div className="mb-3">
+                <p className="text-sm font-medium text-gray-500 mb-1">Topic:</p>
+                <p className="text-gray-700">{caption.topic}</p>
+              </div>
+
+              <div className="bg-gray-50 rounded-lg p-4 mb-3">
+                <p className="text-gray-900 whitespace-pre-wrap">{caption.caption_text}</p>
+              </div>
+
+              {caption.hashtags && (
+                <div className="pt-3 border-t border-gray-100">
+                  <p className="text-blue-600 text-sm">{caption.hashtags}</p>
                 </div>
-
-                {caption.hashtags && (
-                  <div className="pt-3 border-t border-bat-border">
-                    <p className="text-bat-muted text-sm">{caption.hashtags}</p>
-                  </div>
-                )}
-              </motion.div>
-            ))}
-          </AnimatePresence>
+              )}
+            </div>
+          ))}
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }

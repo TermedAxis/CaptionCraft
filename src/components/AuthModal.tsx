@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { X } from "lucide-react";
+import { X, Sparkles } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
-import { motion } from "framer-motion";
 
 interface AuthModalProps {
   onClose: () => void;
@@ -48,93 +47,85 @@ export function AuthModal({ onClose, message }: AuthModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
-      <motion.div
-        initial={{ opacity: 0, scale: 0.96, y: 8 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.96, y: 8 }}
-        transition={{ duration: 0.2 }}
-        className="relative w-full max-w-sm bg-bat-surface border border-bat-border rounded-2xl p-7 shadow-bat-lg"
-      >
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 animate-in fade-in zoom-in-95 duration-200">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 text-bat-muted hover:text-white hover:bg-bat-surface2 rounded-lg transition-all duration-200"
+          className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition"
         >
-          <X className="w-4 h-4" />
+          <X className="w-5 h-5" />
         </button>
 
-        <div className="mb-6">
-          <div className="flex items-center gap-2 mb-5">
-            <div className="w-6 h-6 bg-white rounded-md flex items-center justify-center">
-              <span className="text-black font-bold text-xs">SB</span>
-            </div>
-            <span className="text-sm font-semibold text-white">Social Bat</span>
+        <div className="text-center mb-6">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Sparkles className="w-6 h-6 text-blue-600" />
+            <span className="text-lg font-bold text-gray-900">CaptionCraft</span>
           </div>
           {message && (
-            <div className="mb-4 px-3 py-2.5 bg-bat-bg border border-bat-border rounded-xl text-xs text-bat-muted">
+            <p className="text-sm text-blue-600 bg-blue-50 border border-blue-100 rounded-lg px-4 py-2.5 mb-4">
               {message}
-            </div>
+            </p>
           )}
-          <h2 className="text-xl font-bold text-white mb-1">
+          <h2 className="text-2xl font-bold text-gray-900">
             {mode === "signup" ? "Create your account" : "Welcome back"}
           </h2>
-          <p className="text-sm text-bat-muted">
-            {mode === "signup" ? "Free to start — no credit card needed" : "Sign in to continue"}
+          <p className="text-gray-500 text-sm mt-1">
+            {mode === "signup" ? "Free to get started, no credit card required" : "Sign in to continue"}
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="px-3 py-2.5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-xs">
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
               {error}
             </div>
           )}
 
           {mode === "signup" && (
             <div>
-              <label className="block text-xs font-medium text-bat-muted mb-1.5">Full Name</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Full Name</label>
               <input
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 required
                 placeholder="John Doe"
-                className="bat-input"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
               />
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-medium text-bat-muted mb-1.5">Email</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="you@example.com"
-              className="bat-input"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-bat-muted mb-1.5">Password</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               placeholder="••••••••"
-              className="bat-input"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
             />
             {mode === "signup" && (
-              <p className="text-xs text-bat-subtle mt-1">At least 6 characters</p>
+              <p className="text-xs text-gray-400 mt-1">At least 6 characters</p>
             )}
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="bat-btn-primary w-full mt-2"
+            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading
               ? mode === "signup" ? "Creating account..." : "Signing in..."
@@ -143,16 +134,16 @@ export function AuthModal({ onClose, message }: AuthModalProps) {
           </button>
         </form>
 
-        <p className="text-center text-xs text-bat-muted mt-5">
+        <p className="text-center text-sm text-gray-500 mt-5">
           {mode === "signup" ? "Already have an account?" : "Don't have an account?"}{" "}
           <button
             onClick={() => { setMode(mode === "signup" ? "login" : "signup"); setError(""); }}
-            className="text-white font-semibold hover:text-bat-accent transition-colors"
+            className="text-blue-600 font-semibold hover:text-blue-700 transition"
           >
             {mode === "signup" ? "Sign in" : "Sign up"}
           </button>
         </p>
-      </motion.div>
+      </div>
     </div>
   );
 }

@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Hash, Lightbulb, MessageSquare, ChevronDown } from "lucide-react";
 import { ThreadResult as ThreadResultType } from "./types";
 
@@ -14,16 +13,11 @@ export function ThreadResult({ result }: ThreadResultProps) {
   ];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-5"
-    >
-      <div className="bg-bat-surface rounded-xl border border-bat-border p-5">
-        <h3 className="font-semibold text-white text-base mb-1">{result.title}</h3>
+    <div className="space-y-5">
+      <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+        <h3 className="font-semibold text-gray-900 text-base mb-1">{result.title}</h3>
         {result.threadSummary && (
-          <p className="text-sm text-bat-muted mb-4">{result.threadSummary}</p>
+          <p className="text-sm text-gray-500 mb-4">{result.threadSummary}</p>
         )}
 
         <div className="space-y-0">
@@ -37,17 +31,17 @@ export function ThreadResult({ result }: ThreadResultProps) {
                 <div className="flex flex-col items-center shrink-0">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
                     isHook
-                      ? "bg-white text-black"
+                      ? "bg-blue-600 text-white"
                       : isClosing
-                      ? "bg-bat-surface2 border border-bat-border text-white"
-                      : "bg-bat-surface2 border border-bat-border text-bat-muted"
+                      ? "bg-gray-800 text-white"
+                      : "bg-gray-100 text-gray-600"
                   }`}>
                     {isHook ? "1" : isClosing ? <MessageSquare className="w-3.5 h-3.5" /> : tweet.number}
                   </div>
                   {!isLast && (
                     <div className="flex flex-col items-center mt-1 mb-1 flex-1">
-                      <div className="w-0.5 flex-1 bg-bat-border min-h-[12px]" />
-                      <ChevronDown className="w-3 h-3 text-bat-subtle shrink-0" />
+                      <div className="w-0.5 flex-1 bg-gray-200 min-h-[12px]" />
+                      <ChevronDown className="w-3 h-3 text-gray-300 shrink-0" />
                     </div>
                   )}
                 </div>
@@ -55,22 +49,22 @@ export function ThreadResult({ result }: ThreadResultProps) {
                 <div className={`flex-1 pb-4 ${isLast ? "" : ""}`}>
                   <div className={`rounded-xl p-3.5 ${
                     isHook
-                      ? "bg-white/10 border border-white/20"
+                      ? "bg-blue-50 border border-blue-200"
                       : isClosing
-                      ? "bg-bat-surface2 border border-bat-border"
-                      : "bg-bat-surface2 border border-bat-border"
+                      ? "bg-gray-800 text-white"
+                      : "bg-gray-50 border border-gray-200"
                   }`}>
                     {isHook && (
-                      <span className="text-xs font-semibold text-white uppercase tracking-wide block mb-1">Hook Tweet</span>
+                      <span className="text-xs font-semibold text-blue-600 uppercase tracking-wide block mb-1">Hook Tweet</span>
                     )}
                     {isClosing && (
-                      <span className="text-xs font-semibold text-bat-subtle uppercase tracking-wide block mb-1">Closing Tweet</span>
+                      <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide block mb-1">Closing Tweet</span>
                     )}
-                    <p className={`text-sm leading-relaxed whitespace-pre-wrap ${isClosing ? "text-bat-muted" : isHook ? "text-white" : "text-white"}`}>
+                    <p className={`text-sm leading-relaxed whitespace-pre-wrap ${isClosing ? "text-white" : "text-gray-800"}`}>
                       {tweet.content}
                     </p>
                     <div className={`flex justify-end mt-2 text-xs ${
-                      tweet.charCount > 280 ? "text-red-400 font-medium" : "text-bat-subtle"
+                      isClosing ? "text-gray-400" : tweet.charCount > 280 ? "text-red-500 font-medium" : "text-gray-400"
                     }`}>
                       {tweet.charCount}/280
                     </div>
@@ -82,26 +76,26 @@ export function ThreadResult({ result }: ThreadResultProps) {
         </div>
       </div>
 
-      <div className="bg-bat-surface rounded-xl border border-bat-border p-5 space-y-4">
+      <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm space-y-4">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
-            <Hash className="w-4 h-4 text-bat-subtle" />
-            <span className="text-xs font-semibold text-bat-subtle uppercase tracking-wide">Hashtags</span>
+            <Hash className="w-4 h-4 text-gray-500" />
+            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Hashtags</span>
           </div>
-          <p className="text-sm text-bat-muted">{result.hashtags}</p>
+          <p className="text-sm text-blue-600">{result.hashtags}</p>
         </div>
       </div>
 
       {result.engagementTips?.length > 0 && (
-        <div className="bg-bat-surface rounded-xl border border-bat-border p-5">
+        <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
           <div className="flex items-center gap-2 mb-3">
-            <Lightbulb className="w-4 h-4 text-bat-muted" />
-            <h4 className="text-sm font-semibold text-white">Engagement Tips</h4>
+            <Lightbulb className="w-4 h-4 text-yellow-500" />
+            <h4 className="text-sm font-semibold text-gray-900">Engagement Tips</h4>
           </div>
           <ul className="space-y-2">
             {result.engagementTips.map((tip, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm text-bat-muted">
-                <span className="mt-0.5 w-5 h-5 bg-bat-surface2 text-white border border-bat-border rounded-full flex items-center justify-center text-xs font-bold shrink-0">
+              <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
+                <span className="mt-0.5 w-5 h-5 bg-yellow-100 text-yellow-700 rounded-full flex items-center justify-center text-xs font-bold shrink-0">
                   {i + 1}
                 </span>
                 {tip}
@@ -110,6 +104,6 @@ export function ThreadResult({ result }: ThreadResultProps) {
           </ul>
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }

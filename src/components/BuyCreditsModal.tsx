@@ -1,7 +1,6 @@
 import { X, Zap, TrendingUp } from 'lucide-react';
 import { PlanType } from '../lib/supabase';
 import { TOP_UP_PACKAGES } from '../lib/credits';
-import { motion } from 'framer-motion';
 
 interface BuyCreditsModalProps {
   plan: PlanType;
@@ -15,31 +14,27 @@ export function BuyCreditsModal({ plan, currentCredits, onClose }: BuyCreditsMod
   const packages = TOP_UP_PACKAGES[plan];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.96, y: 8 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.2 }}
-        className="bg-bat-surface border border-bat-border rounded-2xl w-full max-w-md overflow-hidden shadow-bat-lg"
-      >
-        <div className="relative px-6 pt-6 pb-5 border-b border-bat-border">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+        <div className="relative bg-gradient-to-br from-slate-900 to-slate-800 px-8 pt-8 pb-6 text-white">
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-1.5 text-bat-muted hover:text-white hover:bg-bat-surface2 rounded-lg transition-all duration-200"
+            className="absolute top-4 right-4 p-1.5 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
-          <div className="flex items-center gap-2 mb-2">
-            <TrendingUp className="w-4 h-4 text-bat-muted" />
-            <span className="text-xs font-medium text-bat-muted uppercase tracking-wider">Top Up Credits</span>
+          <div className="flex items-center gap-2 mb-3">
+            <TrendingUp className="w-5 h-5 text-amber-400" />
+            <span className="text-sm font-medium text-white/70 uppercase tracking-wider">Top Up Credits</span>
           </div>
-          <h2 className="text-xl font-bold text-white mb-1">Buy more credits</h2>
-          <p className="text-sm text-bat-muted">
+          <h2 className="text-2xl font-bold mb-1">Buy more credits</h2>
+          <p className="text-white/60 text-sm">
             You have <span className="text-white font-semibold">{currentCredits}</span> credits remaining.
+            Credits expire at end of billing cycle.
           </p>
         </div>
 
-        <div className="p-5 space-y-2.5">
+        <div className="p-6 space-y-3">
           {packages.map(({ credits, price }) => {
             const perCredit = (price / credits * 100).toFixed(1);
             return (
@@ -48,30 +43,30 @@ export function BuyCreditsModal({ plan, currentCredits, onClose }: BuyCreditsMod
                 href="https://bolt.new/setup/stripe"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between p-4 bg-bat-bg border border-bat-border hover:border-bat-border2 rounded-xl transition-all duration-200 group"
+                className="flex items-center justify-between p-4 border-2 border-gray-200 hover:border-blue-400 rounded-xl transition group cursor-pointer"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-bat-surface border border-bat-border rounded-lg group-hover:border-bat-border2 transition-colors">
-                    <Zap className="w-4 h-4 text-bat-muted" />
+                  <div className="p-2 bg-amber-50 rounded-lg group-hover:bg-amber-100 transition">
+                    <Zap className="w-5 h-5 text-amber-500" />
                   </div>
                   <div>
-                    <p className="font-semibold text-white text-sm">{credits.toLocaleString()} credits</p>
-                    <p className="text-xs text-bat-muted">{perCredit}¢ per credit</p>
+                    <p className="font-bold text-gray-900">{credits.toLocaleString()} credits</p>
+                    <p className="text-xs text-gray-500">{perCredit}¢ per credit</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-xl font-bold text-white">${price}</p>
-                  <p className="text-xs text-bat-muted group-hover:text-white transition-colors">Purchase</p>
+                  <p className="text-xl font-bold text-gray-900">${price}</p>
+                  <p className="text-xs text-blue-600 font-medium group-hover:underline">Purchase</p>
                 </div>
               </a>
             );
           })}
 
-          <p className="text-xs text-center text-bat-subtle pt-2">
-            Credits are added instantly and expire at end of billing cycle.
+          <p className="text-xs text-center text-gray-400 pt-2">
+            Credits are added instantly and expire at the end of your current billing cycle.
           </p>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

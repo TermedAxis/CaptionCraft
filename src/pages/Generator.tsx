@@ -6,7 +6,6 @@ import { ModelSelector } from '../components/ModelSelector';
 import { Sparkles, Copy, Check, AlertCircle, Loader2, Hash, X, Zap } from 'lucide-react';
 import { ModelId } from '../lib/supabase';
 import { getCreditCost, FREE_LIMITS } from '../lib/credits';
-import { motion } from 'framer-motion';
 
 type CaptionVariation = {
   version: string;
@@ -168,19 +167,17 @@ export function Generator({ onRequestAuth, onUpgrade }: GeneratorProps) {
   return (
     <div className="max-w-7xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Caption Creator</h1>
-        <p className="text-bat-muted">Create engaging social media captions in seconds</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Caption Creator</h1>
+        <p className="text-gray-600">Create engaging social media captions in seconds</p>
         {plan === 'free' && freeChecked && (
-          <div className={`mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm border ${
-            freeLimitReached
-              ? 'bg-red-500/10 border-red-500/20 text-red-400'
-              : 'bg-bat-surface border-bat-border text-bat-muted'
+          <div className={`mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm ${
+            freeLimitReached ? 'bg-red-50 text-red-700' : 'bg-blue-50 text-blue-700'
           }`}>
             <AlertCircle className="w-4 h-4" />
             <span>
               Free: {freeUsed}/{freeLimit} captions used
               {freeLimitReached && (
-                <button onClick={onUpgrade} className="underline font-semibold ml-1 text-white">
+                <button onClick={onUpgrade} className="underline font-semibold ml-1">
                   Upgrade to continue
                 </button>
               )}
@@ -190,15 +187,15 @@ export function Generator({ onRequestAuth, onUpgrade }: GeneratorProps) {
       </div>
 
       <div className="grid lg:grid-cols-2 gap-8">
-        <div className="bg-bat-surface rounded-xl border border-bat-border p-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <form onSubmit={handleGenerate} className="space-y-5">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-bat-accent mb-2">Platform</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Platform</label>
                 <select
                   value={platform}
                   onChange={(e) => setPlatform(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-bat-bg border border-bat-border rounded-xl text-white focus:ring-2 focus:ring-white/10 focus:border-bat-border2 outline-none"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="instagram">Instagram</option>
                   <option value="tiktok">TikTok</option>
@@ -208,11 +205,11 @@ export function Generator({ onRequestAuth, onUpgrade }: GeneratorProps) {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-bat-accent mb-2">Content Type</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Content Type</label>
                 <select
                   value={contentType}
                   onChange={(e) => setContentType(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-bat-bg border border-bat-border rounded-xl text-white focus:ring-2 focus:ring-white/10 focus:border-bat-border2 outline-none"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="post">Post</option>
                   <option value="reel">Reel</option>
@@ -223,46 +220,46 @@ export function Generator({ onRequestAuth, onUpgrade }: GeneratorProps) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-bat-accent mb-2">Topic / Context *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Topic / Context *</label>
               <textarea
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
                 required
                 rows={3}
                 placeholder="e.g., Morning routine for productivity, New product launch, Behind the scenes..."
-                className="w-full px-4 py-2.5 bg-bat-bg border border-bat-border rounded-xl text-white placeholder-bat-subtle focus:ring-2 focus:ring-white/10 focus:border-bat-border2 outline-none resize-none"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-bat-accent mb-2">Hook (Optional)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Hook (Optional)</label>
               <input
                 type="text"
                 value={hook}
                 onChange={(e) => setHook(e.target.value)}
                 placeholder="First line to grab attention..."
-                className="w-full px-4 py-2.5 bg-bat-bg border border-bat-border rounded-xl text-white placeholder-bat-subtle focus:ring-2 focus:ring-white/10 focus:border-bat-border2 outline-none"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-bat-accent mb-2">Target Audience (Optional)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Target Audience (Optional)</label>
               <input
                 type="text"
                 value={targetAudience}
                 onChange={(e) => setTargetAudience(e.target.value)}
                 placeholder="e.g., Entrepreneurs, Fitness enthusiasts, Moms..."
-                className="w-full px-4 py-2.5 bg-bat-bg border border-bat-border rounded-xl text-white placeholder-bat-subtle focus:ring-2 focus:ring-white/10 focus:border-bat-border2 outline-none"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-bat-accent mb-2">Tone</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Tone</label>
                 <select
                   value={tone}
                   onChange={(e) => setTone(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-bat-bg border border-bat-border rounded-xl text-white focus:ring-2 focus:ring-white/10 focus:border-bat-border2 outline-none"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="professional">Professional</option>
                   <option value="casual">Casual</option>
@@ -273,11 +270,11 @@ export function Generator({ onRequestAuth, onUpgrade }: GeneratorProps) {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-bat-accent mb-2">Emoji Level</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Emoji Level</label>
                 <select
                   value={emojiLevel}
                   onChange={(e) => setEmojiLevel(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-bat-bg border border-bat-border rounded-xl text-white focus:ring-2 focus:ring-white/10 focus:border-bat-border2 outline-none"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="none">None</option>
                   <option value="light">Light</option>
@@ -288,11 +285,11 @@ export function Generator({ onRequestAuth, onUpgrade }: GeneratorProps) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-bat-accent mb-2">Call-to-Action (Optional)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Call-to-Action (Optional)</label>
               <select
                 value={cta}
                 onChange={(e) => setCta(e.target.value)}
-                className="w-full px-4 py-2.5 bg-bat-bg border border-bat-border rounded-xl text-white focus:ring-2 focus:ring-white/10 focus:border-bat-border2 outline-none"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">None</option>
                 <option value="Follow for more">Follow for more</option>
@@ -303,26 +300,26 @@ export function Generator({ onRequestAuth, onUpgrade }: GeneratorProps) {
               </select>
             </div>
 
-            <div className="border border-bat-border rounded-xl p-4 space-y-3">
+            <div className="border border-gray-200 rounded-lg p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Hash className="w-4 h-4 text-bat-muted" />
-                  <span className="text-sm font-medium text-bat-accent">Hashtags</span>
+                  <Hash className="w-4 h-4 text-gray-500" />
+                  <span className="text-sm font-medium text-gray-700">Hashtags</span>
                 </div>
                 <button
                   type="button"
                   onClick={() => setIncludeHashtags(!includeHashtags)}
-                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${includeHashtags ? 'bg-white' : 'bg-bat-surface2'}`}
+                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${includeHashtags ? 'bg-blue-600' : 'bg-gray-300'}`}
                 >
-                  <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-black shadow transition-transform ${includeHashtags ? 'translate-x-4.5' : 'translate-x-0.5'}`} />
+                  <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform ${includeHashtags ? 'translate-x-4.5' : 'translate-x-0.5'}`} />
                 </button>
               </div>
               {includeHashtags && (
                 <div className="space-y-2">
-                  <p className="text-xs text-bat-subtle">Add hashtags you want included</p>
+                  <p className="text-xs text-gray-500">Add hashtags you want included</p>
                   <div className="flex gap-2">
                     <div className="relative flex-1">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-bat-subtle text-sm">#</span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">#</span>
                       <input
                         type="text"
                         value={hashtagInput}
@@ -330,13 +327,13 @@ export function Generator({ onRequestAuth, onUpgrade }: GeneratorProps) {
                         onKeyDown={handleHashtagKeyDown}
                         onBlur={() => hashtagInput && addHashtag(hashtagInput)}
                         placeholder="fitness, travel, food..."
-                        className="w-full pl-7 pr-3 py-2 text-sm bg-bat-bg border border-bat-border rounded-xl text-white placeholder-bat-subtle focus:ring-2 focus:ring-white/10 focus:border-bat-border2 outline-none"
+                        className="w-full pl-7 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
                     <button
                       type="button"
                       onClick={() => addHashtag(hashtagInput)}
-                      className="px-3 py-2 bg-bat-bg text-bat-muted text-sm rounded-xl border border-bat-border hover:border-bat-border2 transition"
+                      className="px-3 py-2 bg-gray-100 text-gray-700 text-sm rounded-lg hover:bg-gray-200 transition"
                     >
                       Add
                     </button>
@@ -344,9 +341,9 @@ export function Generator({ onRequestAuth, onUpgrade }: GeneratorProps) {
                   {customHashtags.length > 0 && (
                     <div className="flex flex-wrap gap-1.5">
                       {customHashtags.map((tag) => (
-                        <span key={tag} className="inline-flex items-center gap-1 px-2.5 py-1 bg-bat-surface2 text-white text-xs font-medium rounded-full border border-bat-border">
+                        <span key={tag} className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full">
                           #{tag}
-                          <button type="button" onClick={() => removeHashtag(tag)} className="hover:text-bat-accent transition">
+                          <button type="button" onClick={() => removeHashtag(tag)} className="hover:text-blue-900 transition">
                             <X className="w-3 h-3" />
                           </button>
                         </span>
@@ -366,7 +363,7 @@ export function Generator({ onRequestAuth, onUpgrade }: GeneratorProps) {
             />
 
             {error && (
-              <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-xl text-sm flex items-start gap-2">
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm flex items-start gap-2">
                 <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
                 {error}
               </div>
@@ -374,18 +371,18 @@ export function Generator({ onRequestAuth, onUpgrade }: GeneratorProps) {
 
             {plan !== 'free' && (
               <div className="flex items-center justify-between text-sm pt-1">
-                <div className="flex items-center gap-1.5 text-bat-muted">
-                  <Zap className="w-4 h-4" />
-                  Cost: <span className="font-semibold text-bat-muted ml-1">{creditCost} credits</span>
+                <div className="flex items-center gap-1.5 text-gray-600">
+                  <Zap className="w-4 h-4 text-amber-500" />
+                  Cost: <span className="font-semibold text-gray-900 ml-1">{creditCost} credits</span>
                 </div>
-                <span className="text-bat-subtle">Balance: {credits}</span>
+                <span className="text-gray-400">Balance: {credits}</span>
               </div>
             )}
 
             <button
               type="submit"
               disabled={loading || !topic || !canAfford}
-              className="w-full bg-white text-black py-3 rounded-xl font-semibold hover:bg-bat-accent transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -409,55 +406,44 @@ export function Generator({ onRequestAuth, onUpgrade }: GeneratorProps) {
 
         <div className="space-y-4">
           {variations.length === 0 && !loading && (
-            <div className="bg-bat-surface rounded-xl border-2 border-dashed border-bat-border p-12 text-center">
-              <Sparkles className="w-12 h-12 text-bat-subtle mx-auto mb-4" />
-              <p className="text-bat-muted">Your generated captions will appear here</p>
+            <div className="bg-gray-50 rounded-xl border-2 border-dashed border-gray-300 p-12 text-center">
+              <Sparkles className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-600">Your generated captions will appear here</p>
             </div>
           )}
           {variations.map((variation, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="bg-bat-surface rounded-xl border border-bat-border p-6"
-            >
+            <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <div className="flex items-center justify-between mb-4">
-                <span className="text-sm font-semibold text-white bg-bat-surface2 px-3 py-1 rounded-full border border-bat-border">
+                <span className="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
                   Version {variation.version}
                 </span>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleCopy(index, variation.caption, variation.hashtags)}
-                    className="p-2 text-bat-muted bg-bat-surface2 border border-bat-border hover:border-bat-border2 rounded-lg transition"
+                    className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition"
                     title="Copy to clipboard"
                   >
                     {copiedIndex === index ? (
-                      <Check className="w-5 h-5 text-green-400" />
+                      <Check className="w-5 h-5 text-green-600" />
                     ) : (
                       <Copy className="w-5 h-5" />
                     )}
                   </button>
                   <button
                     onClick={() => handleSave(variation)}
-                    className="px-4 py-2 bg-bat-surface2 text-bat-muted rounded-lg font-medium border border-bat-border hover:border-bat-border2 transition text-sm"
+                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition text-sm"
                   >
                     Save
                   </button>
                 </div>
               </div>
-              <p className="text-white whitespace-pre-wrap mb-4">{variation.caption}</p>
+              <p className="text-gray-900 whitespace-pre-wrap mb-4">{variation.caption}</p>
               {variation.hashtags && (
-                <div className="pt-4 border-t border-bat-border">
-                  <div className="flex flex-wrap gap-1.5">
-                    {variation.hashtags.split(' ').map((tag, i) => (
-                      <span key={i} className="inline-block px-2.5 py-1 bg-bat-surface2 text-white text-xs font-medium rounded-full border border-bat-border">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
+                <div className="pt-4 border-t border-gray-100">
+                  <p className="text-blue-600 text-sm">{variation.hashtags}</p>
                 </div>
               )}
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>
