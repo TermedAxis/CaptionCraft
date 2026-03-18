@@ -29,14 +29,14 @@ export const CREDIT_COSTS: Record<FeatureType, Record<string, number>> = {
     premium: 100,
   },
   thumbnail: {
-    'base-image': 40,
+    'base-image': 30,
     'hobby-image': 60,
     'pro-image': 100,
   },
 };
 
 export const ALLOWED_MODELS: Record<PlanType, ModelId[]> = {
-  free: ['base'],
+  free: ['base', 'base-image'],
   hobby: ['base', 'mid', 'base-image', 'hobby-image'],
   pro: ['base', 'mid', 'premium', 'base-image', 'hobby-image', 'pro-image'],
 };
@@ -45,7 +45,7 @@ export const MODEL_LABELS: Record<ModelId, string> = {
   base: 'Fast',
   mid: 'Smart',
   premium: 'Premium',
-  'base-image': 'Standard',
+  'base-image': 'Fast',
   'hobby-image': 'Enhanced',
   'pro-image': 'Premium',
 };
@@ -63,7 +63,7 @@ export const MODEL_PLAN_REQUIRED: Record<ModelId, PlanType> = {
   base: 'free',
   mid: 'hobby',
   premium: 'pro',
-  'base-image': 'hobby',
+  'base-image': 'free',
   'hobby-image': 'hobby',
   'pro-image': 'pro',
 };
