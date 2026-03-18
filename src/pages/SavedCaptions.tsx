@@ -73,11 +73,11 @@ export function SavedCaptions({ onRequestAuth: _onRequestAuth }: SavedCaptionsPr
     return (
       <div className="max-w-5xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Saved Captions</h1>
-          <p className="text-gray-600">Access all your generated captions</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Saved Media</h1>
+          <p className="text-gray-600">Access all your generated content including captions, scripts, thumbnails, and more</p>
         </div>
         <div className="bg-gray-50 rounded-xl border-2 border-dashed border-gray-300 p-16 text-center">
-          <p className="text-gray-600 font-medium mb-2">Sign in to view your saved captions</p>
+          <p className="text-gray-600 font-medium mb-2">Sign in to view your saved media</p>
           <p className="text-sm text-gray-400">Your saved content will appear here after signing in</p>
         </div>
       </div>
@@ -87,8 +87,8 @@ export function SavedCaptions({ onRequestAuth: _onRequestAuth }: SavedCaptionsPr
   return (
     <div className="max-w-5xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Saved Captions</h1>
-        <p className="text-gray-600">Access all your generated captions</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Saved Media</h1>
+        <p className="text-gray-600">Access all your generated content including captions, scripts, thumbnails, and more</p>
       </div>
 
       <div className="mb-6 flex items-center gap-3">
@@ -116,8 +116,8 @@ export function SavedCaptions({ onRequestAuth: _onRequestAuth }: SavedCaptionsPr
         </div>
       ) : captions.length === 0 ? (
         <div className="bg-gray-50 rounded-xl border-2 border-dashed border-gray-300 p-12 text-center">
-          <p className="text-gray-600 mb-4">No saved captions yet</p>
-          <p className="text-sm text-gray-500">Generate and save captions to see them here</p>
+          <p className="text-gray-600 mb-4">No saved media yet</p>
+          <p className="text-sm text-gray-500">Generate and save content to see it here</p>
         </div>
       ) : (
         <div className="space-y-4">

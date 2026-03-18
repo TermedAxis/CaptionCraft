@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Sparkles, FileText, LogOut, Crown, LayoutGrid, ScrollText, Image as ImageIcon, Zap, Star, TrendingUp } from 'lucide-react';
+import { Sparkles, LogOut, Crown, LayoutGrid, ScrollText, Image as ImageIcon, Zap, Star, TrendingUp, FolderOpen } from 'lucide-react';
 
 type NavPage = 'generator' | 'saved' | 'planner' | 'script' | 'thumbnail';
 
@@ -16,7 +16,7 @@ type DashboardLayoutProps = {
 const AUTH_REQUIRED_PAGES: NavPage[] = ['saved', 'script', 'thumbnail'];
 
 const AUTH_MESSAGES: Partial<Record<NavPage, string>> = {
-  saved: 'Sign in to view your saved captions',
+  saved: 'Sign in to view your saved media',
   script: 'Sign in to use the Script Generator',
   thumbnail: 'Sign in to use the Thumbnail Generator',
 };
@@ -39,7 +39,7 @@ export function DashboardLayout({ children, currentPage, onNavigate, onRequestAu
     { id: 'generator', label: 'Caption Creator', icon: Sparkles },
     { id: 'script', label: 'Script Generator', icon: ScrollText },
     { id: 'thumbnail', label: 'Thumbnail Generator', icon: ImageIcon },
-    { id: 'saved', label: 'Saved', icon: FileText },
+    { id: 'saved', label: 'Saved Media', icon: FolderOpen },
   ];
 
   const handleNavClick = (id: NavPage) => {
