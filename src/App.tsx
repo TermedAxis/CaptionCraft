@@ -12,12 +12,29 @@ import { DashboardLayout } from './components/DashboardLayout';
 import { AuthModal } from './components/AuthModal';
 import { UpgradeModal } from './components/UpgradeModal';
 import { BuyCreditsModal } from './components/BuyCreditsModal';
+import { useRouter } from './router/useRouter';
+
+import { AiCaptionGeneratorPage } from './pages/seo/AiCaptionGeneratorPage';
+import { InstagramCaptionPage } from './pages/seo/InstagramCaptionPage';
+import { YoutubeScriptPage } from './pages/seo/YoutubeScriptPage';
+import { TiktokCaptionPage } from './pages/seo/TiktokCaptionPage';
+import { ThumbnailGeneratorPage } from './pages/seo/ThumbnailGeneratorPage';
+import { BlogIndexPage } from './pages/seo/BlogIndexPage';
+import { BlogPostPage } from './pages/seo/BlogPostPage';
+import { ProgrammaticPage } from './pages/seo/ProgrammaticPage';
+
+import {
+  INSTAGRAM_NICHES,
+  YOUTUBE_TOPICS,
+  TIKTOK_INDUSTRIES,
+} from './seo/programmatic-data';
 
 type Page = 'generator' | 'saved' | 'planner' | 'script' | 'thumbnail';
 
 function AppContent() {
   const { user, loading } = useAuth();
   const { plan, credits } = useCredits();
+  const { route, navigate } = useRouter();
 
   const [page, setPage] = useState<Page>('generator');
   const [showUpgrade, setShowUpgrade] = useState(false);
@@ -54,10 +71,79 @@ function AppContent() {
     );
   }
 
+  const handleGetStarted = () => {
+    if (user) {
+      navigate('/');
+    } else {
+      requestAuth();
+    }
+  };
+
+  const renderSEOPage = () => {
+    const { path, params } = route;
+
+    if (path === '/ai-caption-generator') {
+      return <AiCaptionGeneratorPage onGetStarted={handleGetStarted} navigate={navigate} />;
+    }
+    if (path === '/ai-instagram-caption-generator') {
+      return <InstagramCaptionPage onGetStarted={handleGetStarted} navigate={navigate} />;
+    }
+    if (path === '/ai-youtube-script-generator') {
+      return <YoutubeScriptPage onGetStarted={handleGetStarted} navigate={navigate} />;
+    }
+    if (path === '/ai-tiktok-caption-generator') {
+      return <TiktokCaptionPage onGetStarted={handleGetStarted} navigate={navigate} />;
+    }
+    if (path === '/ai-thumbnail-generator') {
+      return <ThumbnailGeneratorPage onGetStarted={handleGetStarted} navigate={navigate} />;
+    }
+    if (path === '/blog') {
+      return <BlogIndexPage onGetStarted={handleGetStarted} navigate={navigate} />;
+    }
+    if (path === '/blog/post' && params.slug) {
+      return <BlogPostPage slug={params.slug} onGetStarted={handleGetStarted} navigate={navigate} />;
+    }
+    if (path === '/instagram-captions' && params.slug) {
+      const entry = INSTAGRAM_NICHES.find((n) => n.slug === params.slug);
+      if (entry) {
+        return <ProgrammaticPage type="instagram" entry={entry} onGetStarted={handleGetStarted} navigate={navigate} />;
+      }
+    }
+    if (path === '/youtube-video-ideas' && params.slug) {
+      const entry = YOUTUBE_TOPICS.find((t) => t.slug === params.slug);
+      if (entry) {
+        return <ProgrammaticPage type="youtube" entry={entry} onGetStarted={handleGetStarted} navigate={navigate} />;
+      }
+    }
+    if (path === '/tiktok-hooks' && params.slug) {
+      const entry = TIKTOK_INDUSTRIES.find((t) => t.slug === params.slug);
+      if (entry) {
+        return <ProgrammaticPage type="tiktok" entry={entry} onGetStarted={handleGetStarted} navigate={navigate} />;
+      }
+    }
+    return null;
+  };
+
+  const seoPage = renderSEOPage();
+
+  if (seoPage) {
+    return (
+      <>
+        {seoPage}
+        {showAuthModal && (
+          <AuthModal
+            onClose={() => setShowAuthModal(false)}
+            message={authModalMessage}
+          />
+        )}
+      </>
+    );
+  }
+
   if (!user) {
     return (
       <>
-        <Landing onGetStarted={() => requestAuth()} />
+        <Landing onGetStarted={() => requestAuth()} navigate={navigate} />
         {showAuthModal && (
           <AuthModal
             onClose={() => setShowAuthModal(false)}

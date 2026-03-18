@@ -177,7 +177,7 @@ const PLATFORMS = [
   { name: 'LinkedIn', icon: Linkedin, color: 'text-blue-700' },
 ];
 
-export function Landing({ onGetStarted }: { onGetStarted: () => void }) {
+export function Landing({ onGetStarted, navigate }: { onGetStarted: () => void; navigate: (path: string) => void }) {
   return (
     <div className="min-h-screen bg-white text-gray-900">
 
@@ -190,9 +190,9 @@ export function Landing({ onGetStarted }: { onGetStarted: () => void }) {
           </div>
           <div className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-600">
             <a href="#features" className="hover:text-gray-900 transition">Features</a>
-            <a href="#how-it-works" className="hover:text-gray-900 transition">How It Works</a>
             <a href="#pricing" className="hover:text-gray-900 transition">Pricing</a>
-            <a href="#faq" className="hover:text-gray-900 transition">FAQ</a>
+            <button onClick={() => navigate('/blog')} className="hover:text-gray-900 transition">Blog</button>
+            <button onClick={() => navigate('/ai-caption-generator')} className="hover:text-gray-900 transition">AI Tools</button>
           </div>
           <button
             onClick={onGetStarted}
@@ -554,21 +554,34 @@ export function Landing({ onGetStarted }: { onGetStarted: () => void }) {
                 The AI content generator built for creators. Captions, posts, scripts, and thumbnails — all in one platform.
               </p>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-8 text-sm">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
               <div>
                 <p className="font-semibold text-gray-900 mb-3">Product</p>
                 <ul className="space-y-2 text-gray-500">
                   <li><a href="#features" className="hover:text-gray-900 transition">Features</a></li>
                   <li><a href="#pricing" className="hover:text-gray-900 transition">Pricing</a></li>
                   <li><a href="#how-it-works" className="hover:text-gray-900 transition">How It Works</a></li>
+                  <li><button onClick={() => navigate('/blog')} className="hover:text-gray-900 transition text-left">Blog</button></li>
                 </ul>
               </div>
               <div>
-                <p className="font-semibold text-gray-900 mb-3">Tools</p>
+                <p className="font-semibold text-gray-900 mb-3">AI Tools</p>
                 <ul className="space-y-2 text-gray-500">
-                  <li><button onClick={onGetStarted} className="hover:text-gray-900 transition text-left">Caption Generator</button></li>
-                  <li><button onClick={onGetStarted} className="hover:text-gray-900 transition text-left">Script Generator</button></li>
-                  <li><button onClick={onGetStarted} className="hover:text-gray-900 transition text-left">Thumbnail Generator</button></li>
+                  <li><button onClick={() => navigate('/ai-caption-generator')} className="hover:text-gray-900 transition text-left">Caption Generator</button></li>
+                  <li><button onClick={() => navigate('/ai-instagram-caption-generator')} className="hover:text-gray-900 transition text-left">Instagram Captions</button></li>
+                  <li><button onClick={() => navigate('/ai-youtube-script-generator')} className="hover:text-gray-900 transition text-left">YouTube Scripts</button></li>
+                  <li><button onClick={() => navigate('/ai-tiktok-caption-generator')} className="hover:text-gray-900 transition text-left">TikTok Captions</button></li>
+                  <li><button onClick={() => navigate('/ai-thumbnail-generator')} className="hover:text-gray-900 transition text-left">Thumbnail Generator</button></li>
+                </ul>
+              </div>
+              <div>
+                <p className="font-semibold text-gray-900 mb-3">Captions by Niche</p>
+                <ul className="space-y-2 text-gray-500">
+                  <li><button onClick={() => navigate('/instagram-captions-for-fitness')} className="hover:text-gray-900 transition text-left">Fitness Captions</button></li>
+                  <li><button onClick={() => navigate('/instagram-captions-for-food')} className="hover:text-gray-900 transition text-left">Food Captions</button></li>
+                  <li><button onClick={() => navigate('/instagram-captions-for-travel')} className="hover:text-gray-900 transition text-left">Travel Captions</button></li>
+                  <li><button onClick={() => navigate('/instagram-captions-for-fashion')} className="hover:text-gray-900 transition text-left">Fashion Captions</button></li>
+                  <li><button onClick={() => navigate('/instagram-captions-for-business')} className="hover:text-gray-900 transition text-left">Business Captions</button></li>
                 </ul>
               </div>
               <div>
