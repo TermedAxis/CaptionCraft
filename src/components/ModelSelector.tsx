@@ -97,10 +97,10 @@ export function ModelSelector({ feature, plan, selected, onChange, onUpgradeRequ
               </div>
               <span className={`block text-xs ${isSelected ? 'text-blue-100' : 'text-gray-400'}`}>
                 {isFree
-                  ? `${PLAN_NAMES[requiredPlan]}+`
+                  ? PLAN_NAMES[requiredPlan]
                   : isAllowed
                   ? `${cost} cr`
-                  : `${PLAN_NAMES[requiredPlan]}+`}
+                  : PLAN_NAMES[requiredPlan]}
               </span>
             </button>
           );
