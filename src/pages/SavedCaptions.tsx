@@ -98,15 +98,16 @@ export function SavedCaptions({ onRequestAuth: _onRequestAuth }: SavedCaptionsPr
           onChange={(e) => setSelectedPlatform(e.target.value)}
           className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         >
-          <option value="all">All Platforms</option>
-          <option value="instagram">Instagram</option>
-          <option value="tiktok">TikTok</option>
-          <option value="linkedin">LinkedIn</option>
-          <option value="twitter">Twitter</option>
-          <option value="youtube">YouTube Shorts</option>
+          <option value="all">All Media</option>
+          <option value="posts">Posts</option>
+          <option value="threads">Threads</option>
+          <option value="carousels">Carousels</option>
+          <option value="captions">Captions</option>
+          <option value="scripts">Scripts</option>
+          <option value="thumbnails">Thumbnails</option>
         </select>
         <span className="text-sm text-gray-600">
-          {captions.length} {captions.length === 1 ? 'caption' : 'captions'}
+          {captions.length} {captions.length === 1 ? 'item' : 'items'}
         </span>
       </div>
 
