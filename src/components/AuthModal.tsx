@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { X, Sparkles } from "lucide-react";
+import { X } from "lucide-react";
+import { LogoMark } from "./Logo";
 import { useAuth } from "../contexts/AuthContext";
 
 interface AuthModalProps {
@@ -58,7 +59,9 @@ export function AuthModal({ onClose, message }: AuthModalProps) {
 
         <div className="text-center mb-6">
           <div className="flex items-center justify-center gap-2 mb-4">
-            <Sparkles className="w-6 h-6 text-blue-600" />
+            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+              <LogoMark size={22} />
+            </div>
             <span className="text-lg font-bold text-gray-900">Media Wizard</span>
           </div>
           {message && (

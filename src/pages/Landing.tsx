@@ -5,6 +5,7 @@ import {
   Twitter, Instagram, Youtube, Linkedin, Play, Copy, Check,
   Hash, MessageSquare, Film, BookOpen
 } from 'lucide-react';
+import { LogoMark } from '../components/Logo';
 
 /* ─── Animated counter ──────────────────────────────────────────── */
 function Counter({ target, suffix = '' }: { target: number; suffix?: string }) {
@@ -324,7 +325,7 @@ export function Landing({ onGetStarted, navigate }: { onGetStarted: () => void; 
         <div className="container mx-auto px-6 py-4 flex justify-between items-center max-w-6xl">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-white" />
+              <LogoMark size={22} />
             </div>
             <span className="text-xl font-bold text-gray-900">Media Wizard</span>
           </div>
@@ -731,7 +732,7 @@ export function Landing({ onGetStarted, navigate }: { onGetStarted: () => void; 
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <Sparkles className="w-3.5 h-3.5 text-white" />
+                  <LogoMark size={18} />
                 </div>
                 <span className="font-bold text-gray-900">Media Wizard</span>
               </div>

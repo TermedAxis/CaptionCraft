@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Sparkles, LogOut, Crown, LayoutGrid, ScrollText, Image as ImageIcon, Zap, Star, TrendingUp, FolderOpen, ChevronDown } from 'lucide-react';
+import { LogOut, Crown, LayoutGrid, ScrollText, Image as ImageIcon, Zap, Star, TrendingUp, FolderOpen, ChevronDown, Sparkles } from 'lucide-react';
+import { LogoMark } from './Logo';
 import { useState, useRef, useEffect } from 'react';
 
 type NavPage = 'generator' | 'saved' | 'planner' | 'script' | 'thumbnail';
@@ -165,7 +166,7 @@ export function DashboardLayout({ children, currentPage, onNavigate, onRequestAu
             {/* LEFT: Logo */}
             <div className="flex items-center gap-2.5 flex-shrink-0">
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <Sparkles className="w-4.5 h-4.5 text-white w-5 h-5" />
+                <LogoMark size={22} />
               </div>
               <span className="text-lg font-bold text-gray-900 hidden sm:block">Media Wizard</span>
             </div>

@@ -1,4 +1,5 @@
-import { Sparkles, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
+import { LogoMark } from '../../components/Logo';
 
 interface SeoNavProps {
   onGetStarted: () => void;
@@ -21,7 +22,9 @@ export function SeoNav({ onGetStarted, navigate, showBack = false }: SeoNavProps
             </button>
           )}
           <button onClick={() => navigate('/')} className="flex items-center gap-2">
-            <Sparkles className="w-6 h-6 text-blue-600" />
+            <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
+              <LogoMark size={18} />
+            </div>
             <span className="text-lg font-bold text-gray-900">Media Wizard</span>
           </button>
         </div>
