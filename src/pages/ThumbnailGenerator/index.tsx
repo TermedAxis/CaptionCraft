@@ -136,8 +136,8 @@ export function ThumbnailGenerator({ onRequestAuth, onUpgrade }: ThumbnailGenera
   };
 
   return (
-    <div className="max-w-6xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
+    <div className="max-w-7xl mx-auto">
+      <div className="mb-8 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="p-2.5 bg-blue-100 rounded-xl">
             <ImageIcon className="w-6 h-6 text-blue-600" />
@@ -152,9 +152,9 @@ export function ThumbnailGenerator({ onRequestAuth, onUpgrade }: ThumbnailGenera
             freeLimitReached ? 'bg-red-50 text-red-700' : 'bg-blue-50 text-blue-700'
           }`}>
             <AlertCircle className="w-4 h-4" />
-            <span>Free: {freeUsed}/{freeLimit} thumbnail used</span>
+            <span>Free: {freeUsed}/{freeLimit} thumbnails used</span>
             {freeLimitReached && (
-              <button onClick={onUpgrade} className="underline font-semibold">Upgrade</button>
+              <button onClick={onUpgrade} className="underline font-semibold ml-1">Upgrade</button>
             )}
           </div>
         )}

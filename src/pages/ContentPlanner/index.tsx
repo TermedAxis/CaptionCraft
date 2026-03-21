@@ -178,10 +178,15 @@ export function ContentPlanner({ onRequestAuth, onUpgrade }: ContentPlannerProps
 
   return (
     <div className="max-w-7xl mx-auto">
-      <div className="mb-8 flex items-start justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Content Creator</h1>
-          <p className="text-gray-600">Plan and script your social media content with AI</p>
+      <div className="mb-8 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-blue-100 rounded-xl">
+            <LayoutGrid className="w-6 h-6 text-blue-600" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Content Creator</h1>
+            <p className="text-sm text-gray-500">Plan and script your social media content with AI</p>
+          </div>
         </div>
         {user && plan === "free" && freeChecked && (
           <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm ${
@@ -190,7 +195,7 @@ export function ContentPlanner({ onRequestAuth, onUpgrade }: ContentPlannerProps
             <AlertCircle className="w-4 h-4" />
             <span>Free: {freeUsed}/{freeLimit} posts used</span>
             {freeLimitReached && (
-              <button onClick={onUpgrade} className="underline font-semibold">Upgrade</button>
+              <button onClick={onUpgrade} className="underline font-semibold ml-1">Upgrade</button>
             )}
           </div>
         )}
@@ -222,8 +227,8 @@ export function ContentPlanner({ onRequestAuth, onUpgrade }: ContentPlannerProps
         ))}
       </div>
 
-      <div className="grid lg:grid-cols-[520px_1fr] gap-8 items-start">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+      <div className="grid lg:grid-cols-[480px_1fr] gap-8 items-start">
+        <div className="bg-white rounded-2xl border border-gray-200 p-8 h-fit">
           {error && (
             <div className="flex items-start gap-2 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-5">
               <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
@@ -260,18 +265,23 @@ export function ContentPlanner({ onRequestAuth, onUpgrade }: ContentPlannerProps
 
         <div>
           {!result && !loading && (
-            <div className="bg-gray-50 rounded-xl border-2 border-dashed border-gray-300 p-12 text-center h-full flex flex-col items-center justify-center">
-              <Wand2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600 font-medium">Your content plan will appear here</p>
-              <p className="text-gray-400 text-sm mt-1">Fill in the form and hit generate</p>
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <div className="p-4 bg-gray-100 rounded-2xl mb-4">
+                <Wand2 className="w-8 h-8 text-gray-400" />
+              </div>
+              <p className="text-sm font-medium text-gray-600">Your content plan will appear here</p>
+              <p className="text-xs text-gray-400 mt-1">Fill in the form and hit generate</p>
             </div>
           )}
 
           {loading && (
-            <div className="bg-gray-50 rounded-xl border-2 border-dashed border-gray-300 p-12 text-center h-full flex flex-col items-center justify-center">
-              <div className="w-10 h-10 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-              <p className="text-gray-600 font-medium">Crafting your content plan...</p>
-              <p className="text-gray-400 text-sm mt-1">This may take a moment</p>
+            <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+              <div className="relative mb-4">
+                <div className="w-12 h-12 border-4 border-blue-100 rounded-full" />
+                <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin absolute inset-0" />
+              </div>
+              <p className="text-sm font-medium text-gray-600">Crafting your content plan...</p>
+              <p className="text-xs text-gray-400 mt-1">This may take a moment</p>
             </div>
           )}
 
@@ -293,7 +303,7 @@ export function ContentPlanner({ onRequestAuth, onUpgrade }: ContentPlannerProps
                     className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg border transition ${
                       saved
                         ? "bg-green-50 text-green-700 border-green-200"
-                        : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
+                        : "bg-gray-100 text-gray-700 border-transparent hover:bg-gray-200"
                     }`}
                   >
                     {saved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}

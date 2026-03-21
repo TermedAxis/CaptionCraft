@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useCredits } from '../hooks/useCredits';
 import { ModelSelector } from '../components/ModelSelector';
-import { Sparkles, Copy, Check, AlertCircle, Loader2, Hash, X, Zap } from 'lucide-react';
+import { Sparkles, Copy, Check, AlertCircle, Loader2, Hash, X, Zap, Wand2 } from 'lucide-react';
 import { ModelId } from '../lib/supabase';
 import { getCreditCost, FREE_LIMITS } from '../lib/credits';
 
@@ -17,6 +17,16 @@ interface GeneratorProps {
   onRequestAuth: (message?: string) => void;
   onUpgrade: () => void;
 }
+
+const PLATFORMS = ['Instagram', 'TikTok', 'LinkedIn', 'Twitter', 'YouTube Shorts'];
+const CONTENT_TYPES = ['Post', 'Reel', 'Carousel', 'Short'];
+const TONES = ['Professional', 'Casual', 'Funny', 'Bold', 'Luxury', 'Educational'];
+const EMOJI_LEVELS = [
+  { value: 'none', label: 'None' },
+  { value: 'light', label: 'Light' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'heavy', label: 'Heavy' },
+];
 
 export function Generator({ onRequestAuth, onUpgrade }: GeneratorProps) {
   const { user, profile } = useAuth();
@@ -166,130 +176,183 @@ export function Generator({ onRequestAuth, onUpgrade }: GeneratorProps) {
 
   return (
     <div className="max-w-7xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Caption Creator</h1>
-        <p className="text-gray-600">Create engaging social media captions in seconds</p>
-        {plan === 'free' && freeChecked && (
-          <div className={`mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm ${
+      <div className="mb-8 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-blue-100 rounded-xl">
+            <Sparkles className="w-6 h-6 text-blue-600" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Caption Creator</h1>
+            <p className="text-sm text-gray-500">Create engaging social media captions in seconds</p>
+          </div>
+        </div>
+        {user && plan === 'free' && freeChecked && (
+          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm ${
             freeLimitReached ? 'bg-red-50 text-red-700' : 'bg-blue-50 text-blue-700'
           }`}>
             <AlertCircle className="w-4 h-4" />
-            <span>
-              Free: {freeUsed}/{freeLimit} captions used
-              {freeLimitReached && (
-                <button onClick={onUpgrade} className="underline font-semibold ml-1">
-                  Upgrade to continue
-                </button>
-              )}
-            </span>
+            <span>Free: {freeUsed}/{freeLimit} captions used</span>
+            {freeLimitReached && (
+              <button onClick={onUpgrade} className="underline font-semibold ml-1">Upgrade</button>
+            )}
+          </div>
+        )}
+        {user && plan !== 'free' && (
+          <div className="flex items-center gap-1.5 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
+            <Zap className="w-4 h-4 text-amber-500" />
+            <span className="text-sm font-semibold text-amber-700">{credits.toLocaleString()} credits</span>
           </div>
         )}
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-8">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <form onSubmit={handleGenerate} className="space-y-5">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Platform</label>
-                <select
-                  value={platform}
-                  onChange={(e) => setPlatform(e.target.value)}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="instagram">Instagram</option>
-                  <option value="tiktok">TikTok</option>
-                  <option value="linkedin">LinkedIn</option>
-                  <option value="twitter">Twitter</option>
-                  <option value="youtube">YouTube Shorts</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Content Type</label>
-                <select
-                  value={contentType}
-                  onChange={(e) => setContentType(e.target.value)}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="post">Post</option>
-                  <option value="reel">Reel</option>
-                  <option value="carousel">Carousel</option>
-                  <option value="short">Short</option>
-                </select>
+      <div className="grid lg:grid-cols-[480px_1fr] gap-8 items-start">
+        <div className="bg-white rounded-2xl border border-gray-200 p-8 h-fit">
+          {error && (
+            <div className="flex items-start gap-2 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-5">
+              <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleGenerate} className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2.5">Platform</label>
+              <div className="grid grid-cols-2 gap-2.5">
+                {PLATFORMS.map((p) => {
+                  const val = p.toLowerCase().replace(' ', '-').replace(' shorts', '');
+                  const actualVal = p === 'YouTube Shorts' ? 'youtube' : p.toLowerCase();
+                  return (
+                    <button
+                      key={p}
+                      type="button"
+                      onClick={() => setPlatform(actualVal)}
+                      className={`px-4 py-2.5 rounded-lg text-sm font-medium border transition truncate ${
+                        platform === actualVal
+                          ? 'bg-blue-600 text-white border-blue-600'
+                          : 'bg-white text-gray-700 border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Topic / Context *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2.5">Content Type</label>
+              <div className="grid grid-cols-2 gap-2.5">
+                {CONTENT_TYPES.map((ct) => {
+                  const val = ct.toLowerCase();
+                  return (
+                    <button
+                      key={ct}
+                      type="button"
+                      onClick={() => setContentType(val)}
+                      className={`px-4 py-2.5 rounded-lg text-sm font-medium border transition ${
+                        contentType === val
+                          ? 'bg-blue-600 text-white border-blue-600'
+                          : 'bg-white text-gray-700 border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+                      }`}
+                    >
+                      {ct}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Topic / Context <span className="text-red-500">*</span>
+              </label>
               <textarea
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
                 required
                 rows={3}
                 placeholder="e.g., Morning routine for productivity, New product launch, Behind the scenes..."
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Hook (Optional)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Hook <span className="text-gray-400 font-normal text-xs">(optional)</span>
+              </label>
               <input
                 type="text"
                 value={hook}
                 onChange={(e) => setHook(e.target.value)}
                 placeholder="First line to grab attention..."
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Target Audience (Optional)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Target Audience <span className="text-gray-400 font-normal text-xs">(optional)</span>
+              </label>
               <input
                 type="text"
                 value={targetAudience}
                 onChange={(e) => setTargetAudience(e.target.value)}
                 placeholder="e.g., Entrepreneurs, Fitness enthusiasts, Moms..."
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Tone</label>
-                <select
-                  value={tone}
-                  onChange={(e) => setTone(e.target.value)}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="professional">Professional</option>
-                  <option value="casual">Casual</option>
-                  <option value="funny">Funny</option>
-                  <option value="bold">Bold</option>
-                  <option value="luxury">Luxury</option>
-                  <option value="educational">Educational</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Emoji Level</label>
-                <select
-                  value={emojiLevel}
-                  onChange={(e) => setEmojiLevel(e.target.value)}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="none">None</option>
-                  <option value="light">Light</option>
-                  <option value="medium">Medium</option>
-                  <option value="heavy">Heavy</option>
-                </select>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2.5">Tone</label>
+              <div className="grid grid-cols-3 gap-2.5">
+                {TONES.map((t) => {
+                  const val = t.toLowerCase();
+                  return (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => setTone(val)}
+                      className={`px-3 py-2.5 rounded-lg text-sm font-medium border transition ${
+                        tone === val
+                          ? 'bg-blue-600 text-white border-blue-600'
+                          : 'bg-white text-gray-700 border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+                      }`}
+                    >
+                      {t}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Call-to-Action (Optional)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2.5">Emoji Level</label>
+              <div className="grid grid-cols-4 gap-2.5">
+                {EMOJI_LEVELS.map(({ value, label }) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setEmojiLevel(value)}
+                    className={`py-2.5 rounded-lg text-sm font-medium border transition ${
+                      emojiLevel === value
+                        ? 'bg-blue-600 text-white border-blue-600'
+                        : 'bg-white text-gray-700 border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Call-to-Action <span className="text-gray-400 font-normal text-xs">(optional)</span>
+              </label>
               <select
                 value={cta}
                 onChange={(e) => setCta(e.target.value)}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               >
                 <option value="">None</option>
                 <option value="Follow for more">Follow for more</option>
@@ -300,7 +363,7 @@ export function Generator({ onRequestAuth, onUpgrade }: GeneratorProps) {
               </select>
             </div>
 
-            <div className="border border-gray-200 rounded-lg p-4 space-y-3">
+            <div className="border border-gray-200 rounded-xl p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Hash className="w-4 h-4 text-gray-500" />
@@ -316,7 +379,7 @@ export function Generator({ onRequestAuth, onUpgrade }: GeneratorProps) {
               </div>
               {includeHashtags && (
                 <div className="space-y-2">
-                  <p className="text-xs text-gray-500">Add hashtags you want included</p>
+                  <p className="text-xs text-gray-400">Add hashtags you want included</p>
                   <div className="flex gap-2">
                     <div className="relative flex-1">
                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">#</span>
@@ -327,7 +390,7 @@ export function Generator({ onRequestAuth, onUpgrade }: GeneratorProps) {
                         onKeyDown={handleHashtagKeyDown}
                         onBlur={() => hashtagInput && addHashtag(hashtagInput)}
                         placeholder="fitness, travel, food..."
-                        className="w-full pl-7 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full pl-7 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
                     <button
@@ -354,35 +417,30 @@ export function Generator({ onRequestAuth, onUpgrade }: GeneratorProps) {
               )}
             </div>
 
-            <ModelSelector
-              feature="caption"
-              plan={plan}
-              selected={selectedModel}
-              onChange={setSelectedModel}
-              onUpgradeRequired={onUpgrade}
-            />
+            <div className="pt-2 border-t border-gray-100 space-y-4">
+              <ModelSelector
+                feature="caption"
+                plan={plan}
+                selected={selectedModel}
+                onChange={setSelectedModel}
+                onUpgradeRequired={onUpgrade}
+              />
 
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm flex items-start gap-2">
-                <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
-                {error}
-              </div>
-            )}
-
-            {plan !== 'free' && (
-              <div className="flex items-center justify-between text-sm pt-1">
-                <div className="flex items-center gap-1.5 text-gray-600">
-                  <Zap className="w-4 h-4 text-amber-500" />
-                  Cost: <span className="font-semibold text-gray-900 ml-1">{creditCost} credits</span>
+              {plan !== 'free' && (
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-1.5 text-gray-600">
+                    <Zap className="w-4 h-4 text-amber-500" />
+                    Cost: <span className="font-semibold text-gray-900 ml-1">{creditCost} credits</span>
+                  </div>
+                  <span className="text-gray-400">Balance: {credits}</span>
                 </div>
-                <span className="text-gray-400">Balance: {credits}</span>
-              </div>
-            )}
+              )}
+            </div>
 
             <button
               type="submit"
               disabled={loading || !topic || !canAfford}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-blue-600 text-white py-3.5 rounded-xl font-semibold hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -396,7 +454,7 @@ export function Generator({ onRequestAuth, onUpgrade }: GeneratorProps) {
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-5 h-5" />
+                  <Wand2 className="w-5 h-5" />
                   Generate Captions
                 </>
               )}
@@ -406,13 +464,28 @@ export function Generator({ onRequestAuth, onUpgrade }: GeneratorProps) {
 
         <div className="space-y-4">
           {variations.length === 0 && !loading && (
-            <div className="bg-gray-50 rounded-xl border-2 border-dashed border-gray-300 p-12 text-center">
-              <Sparkles className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">Your generated captions will appear here</p>
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <div className="p-4 bg-gray-100 rounded-2xl mb-4">
+                <Sparkles className="w-8 h-8 text-gray-400" />
+              </div>
+              <p className="text-sm font-medium text-gray-600">Your generated captions will appear here</p>
+              <p className="text-xs text-gray-400 mt-1">Fill in the form and click Generate</p>
             </div>
           )}
+
+          {loading && (
+            <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+              <div className="relative mb-4">
+                <div className="w-12 h-12 border-4 border-blue-100 rounded-full" />
+                <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin absolute inset-0" />
+              </div>
+              <p className="text-sm font-medium text-gray-600">Writing your captions...</p>
+              <p className="text-xs text-gray-400 mt-1">This may take a moment</p>
+            </div>
+          )}
+
           {variations.map((variation, index) => (
-            <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div key={index} className="bg-white rounded-2xl border border-gray-200 p-6">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
                   Version {variation.version}
@@ -420,24 +493,24 @@ export function Generator({ onRequestAuth, onUpgrade }: GeneratorProps) {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleCopy(index, variation.caption, variation.hashtags)}
-                    className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition"
                     title="Copy to clipboard"
                   >
                     {copiedIndex === index ? (
-                      <Check className="w-5 h-5 text-green-600" />
+                      <><Check className="w-4 h-4 text-green-600" /> Copied</>
                     ) : (
-                      <Copy className="w-5 h-5" />
+                      <><Copy className="w-4 h-4" /> Copy</>
                     )}
                   </button>
                   <button
                     onClick={() => handleSave(variation)}
-                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition text-sm"
+                    className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition text-sm"
                   >
                     Save
                   </button>
                 </div>
               </div>
-              <p className="text-gray-900 whitespace-pre-wrap mb-4">{variation.caption}</p>
+              <p className="text-gray-900 whitespace-pre-wrap mb-4 text-sm leading-relaxed">{variation.caption}</p>
               {variation.hashtags && (
                 <div className="pt-4 border-t border-gray-100">
                   <p className="text-blue-600 text-sm">{variation.hashtags}</p>

@@ -51,30 +51,26 @@ export function ContentForm({ tab, values, onChange, onSubmit, loading, freeLimi
 
   return (
     <form onSubmit={onSubmit} className="space-y-6">
-      <div className="grid grid-cols-2 gap-5">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Platform</label>
-          <select
-            value={values.platform}
-            onChange={set("platform")}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-          >
-            {platforms.map((p) => (
-              <option key={p} value={p.toLowerCase().replace(" ", "-")}>{p}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Tone</label>
-          <select
-            value={values.tone}
-            onChange={set("tone")}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-          >
-            {TONES.map((t) => (
-              <option key={t} value={t.toLowerCase()}>{t}</option>
-            ))}
-          </select>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2.5">Platform</label>
+        <div className="grid grid-cols-2 gap-2.5">
+          {platforms.map((p) => {
+            const val = p.toLowerCase().replace(" ", "-");
+            return (
+              <button
+                key={p}
+                type="button"
+                onClick={() => onChange({ ...values, platform: val })}
+                className={`px-4 py-2.5 rounded-lg text-sm font-medium border transition truncate ${
+                  values.platform === val
+                    ? "bg-blue-600 text-white border-blue-600"
+                    : "bg-white text-gray-700 border-gray-200 hover:border-blue-300 hover:bg-blue-50"
+                }`}
+              >
+                {p}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -88,18 +84,43 @@ export function ContentForm({ tab, values, onChange, onSubmit, loading, freeLimi
           value={values.topic}
           onChange={set("topic")}
           placeholder={TOPIC_PLACEHOLDERS[tab]}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm"
+          className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Goal</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2.5">Tone</label>
+        <div className="grid grid-cols-2 gap-2.5">
+          {TONES.map((t) => {
+            const val = t.toLowerCase();
+            return (
+              <button
+                key={t}
+                type="button"
+                onClick={() => onChange({ ...values, tone: val })}
+                className={`px-4 py-2.5 rounded-lg text-sm font-medium border transition ${
+                  values.tone === val
+                    ? "bg-blue-600 text-white border-blue-600"
+                    : "bg-white text-gray-700 border-gray-200 hover:border-blue-300 hover:bg-blue-50"
+                }`}
+              >
+                {t}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Goal <span className="text-gray-400 font-normal text-xs">(optional)</span>
+        </label>
         <select
           value={values.goal}
           onChange={set("goal")}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+          className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
         >
-          <option value="">Select a goal (optional)</option>
+          <option value="">Select a goal</option>
           {GOALS[tab].map((g) => (
             <option key={g} value={g}>{g}</option>
           ))}
@@ -107,24 +128,28 @@ export function ContentForm({ tab, values, onChange, onSubmit, loading, freeLimi
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Target Audience (Optional)</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Target Audience <span className="text-gray-400 font-normal text-xs">(optional)</span>
+        </label>
         <input
           type="text"
           value={values.targetAudience}
           onChange={set("targetAudience")}
           placeholder="e.g., Entrepreneurs aged 25-35, fitness enthusiasts..."
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+          className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Extra Context (Optional)</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Extra Context <span className="text-gray-400 font-normal text-xs">(optional)</span>
+        </label>
         <textarea
           rows={3}
           value={values.extraContext}
           onChange={set("extraContext")}
           placeholder="Any additional details, brand guidelines, or specific requirements..."
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm"
+          className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm"
         />
       </div>
 
