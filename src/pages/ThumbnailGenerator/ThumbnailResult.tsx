@@ -22,13 +22,13 @@ export function ThumbnailResult({ imageUrls, onRegenerate, loading }: ThumbnailR
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-900">
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
           Generated Thumbnails ({imageUrls.length})
         </h3>
         <button
           onClick={onRegenerate}
           disabled={loading}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 disabled:opacity-50 rounded-lg transition"
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50 rounded-lg transition"
         >
           {loading ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -46,8 +46,8 @@ export function ThumbnailResult({ imageUrls, onRegenerate, loading }: ThumbnailR
             onClick={() => setSelected(selected === index ? null : index)}
             className={`relative rounded-xl overflow-hidden cursor-pointer border-2 transition ${
               selected === index
-                ? 'border-blue-500 shadow-lg shadow-blue-100'
-                : 'border-transparent hover:border-gray-200'
+                ? 'border-blue-500 shadow-lg shadow-blue-100 dark:shadow-blue-950'
+                : 'border-transparent hover:border-gray-200 dark:hover:border-gray-600'
             }`}
           >
             <img

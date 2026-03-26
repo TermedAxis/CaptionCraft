@@ -139,17 +139,17 @@ export function ThumbnailGenerator({ onRequestAuth, onUpgrade }: ThumbnailGenera
     <div className="max-w-7xl mx-auto">
       <div className="mb-8 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-blue-100 rounded-xl">
-            <ImageIcon className="w-6 h-6 text-blue-600" />
+          <div className="p-2.5 bg-blue-100 dark:bg-blue-950 rounded-xl">
+            <ImageIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Thumbnail Generator</h1>
-            <p className="text-sm text-gray-500">Generate YouTube thumbnails that get clicks</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Thumbnail Generator</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Generate YouTube thumbnails that get clicks</p>
           </div>
         </div>
         {user && plan === 'free' && freeChecked && (
           <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm ${
-            freeLimitReached ? 'bg-red-50 text-red-700' : 'bg-blue-50 text-blue-700'
+            freeLimitReached ? 'bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300' : 'bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300'
           }`}>
             <AlertCircle className="w-4 h-4" />
             <span>Free: {freeUsed}/{freeLimit} thumbnails used</span>
@@ -159,15 +159,15 @@ export function ThumbnailGenerator({ onRequestAuth, onUpgrade }: ThumbnailGenera
           </div>
         )}
         {user && plan !== 'free' && (
-          <div className="flex items-center gap-1.5 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
+          <div className="flex items-center gap-1.5 px-3 py-2 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg">
             <Zap className="w-4 h-4 text-amber-500" />
-            <span className="text-sm font-semibold text-amber-700">{credits.toLocaleString()} credits</span>
+            <span className="text-sm font-semibold text-amber-700 dark:text-amber-400">{credits.toLocaleString()} credits</span>
           </div>
         )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[480px_1fr] gap-8 items-start">
-        <div className="bg-white rounded-2xl border border-gray-200 p-8 h-fit">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 p-8 h-fit">
           <ThumbnailForm
             onSubmit={handleGenerate}
             loading={loading}
@@ -182,7 +182,7 @@ export function ThumbnailGenerator({ onRequestAuth, onUpgrade }: ThumbnailGenera
 
         <div className="space-y-4">
           {error && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 flex items-start gap-2">
+            <div className="p-4 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-xl text-sm text-red-700 dark:text-red-300 flex items-start gap-2">
               <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
               {error}
             </div>
@@ -191,27 +191,27 @@ export function ThumbnailGenerator({ onRequestAuth, onUpgrade }: ThumbnailGenera
           {loading && (
             <div className="flex flex-col items-center justify-center py-20 text-gray-400">
               <div className="relative mb-4">
-                <div className="w-12 h-12 border-4 border-blue-100 rounded-full" />
+                <div className="w-12 h-12 border-4 border-blue-100 dark:border-blue-900 rounded-full" />
                 <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin absolute inset-0" />
               </div>
-              <p className="text-sm font-medium text-gray-600">Generating thumbnails...</p>
-              <p className="text-xs text-gray-400 mt-1">Creating 3 options for you</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Generating thumbnails...</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Creating 3 options for you</p>
             </div>
           )}
 
           {!loading && imageUrls.length > 0 && (
-            <div className="bg-white rounded-2xl border border-gray-200 p-6">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
               <ThumbnailResult imageUrls={imageUrls} onRegenerate={handleRegenerate} loading={loading} />
             </div>
           )}
 
           {!loading && imageUrls.length === 0 && !error && (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-              <div className="p-4 bg-gray-100 rounded-2xl mb-4">
-                <ImageIcon className="w-8 h-8 text-gray-400" />
+              <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-2xl mb-4">
+                <ImageIcon className="w-8 h-8 text-gray-400 dark:text-gray-500" />
               </div>
-              <p className="text-sm font-medium text-gray-600">Your thumbnails will appear here</p>
-              <p className="text-xs text-gray-400 mt-1">3 options will be generated at once</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Your thumbnails will appear here</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">3 options will be generated at once</p>
             </div>
           )}
         </div>

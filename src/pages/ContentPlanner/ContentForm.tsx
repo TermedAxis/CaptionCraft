@@ -52,7 +52,7 @@ export function ContentForm({ tab, values, onChange, onSubmit, loading, freeLimi
   return (
     <form onSubmit={onSubmit} className="space-y-6">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2.5">Platform</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2.5">Platform</label>
         <div className="grid grid-cols-2 gap-2.5">
           {platforms.map((p) => {
             const val = p.toLowerCase().replace(" ", "-");
@@ -64,7 +64,7 @@ export function ContentForm({ tab, values, onChange, onSubmit, loading, freeLimi
                 className={`px-4 py-2.5 rounded-lg text-sm font-medium border transition truncate ${
                   values.platform === val
                     ? "bg-blue-600 text-white border-blue-600"
-                    : "bg-white text-gray-700 border-gray-200 hover:border-blue-300 hover:bg-blue-50"
+                    : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950"
                 }`}
               >
                 {p}
@@ -75,7 +75,7 @@ export function ContentForm({ tab, values, onChange, onSubmit, loading, freeLimi
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Topic / Theme <span className="text-red-500">*</span>
         </label>
         <textarea
@@ -84,12 +84,12 @@ export function ContentForm({ tab, values, onChange, onSubmit, loading, freeLimi
           value={values.topic}
           onChange={set("topic")}
           placeholder={TOPIC_PLACEHOLDERS[tab]}
-          className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm"
+          className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2.5">Tone</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2.5">Tone</label>
         <div className="grid grid-cols-2 gap-2.5">
           {TONES.map((t) => {
             const val = t.toLowerCase();
@@ -101,7 +101,7 @@ export function ContentForm({ tab, values, onChange, onSubmit, loading, freeLimi
                 className={`px-4 py-2.5 rounded-lg text-sm font-medium border transition ${
                   values.tone === val
                     ? "bg-blue-600 text-white border-blue-600"
-                    : "bg-white text-gray-700 border-gray-200 hover:border-blue-300 hover:bg-blue-50"
+                    : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950"
                 }`}
               >
                 {t}
@@ -112,13 +112,13 @@ export function ContentForm({ tab, values, onChange, onSubmit, loading, freeLimi
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Goal <span className="text-gray-400 font-normal text-xs">(optional)</span>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Goal <span className="text-gray-400 dark:text-gray-500 font-normal text-xs">(optional)</span>
         </label>
         <select
           value={values.goal}
           onChange={set("goal")}
-          className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+          className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
         >
           <option value="">Select a goal</option>
           {GOALS[tab].map((g) => (
@@ -128,28 +128,28 @@ export function ContentForm({ tab, values, onChange, onSubmit, loading, freeLimi
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Target Audience <span className="text-gray-400 font-normal text-xs">(optional)</span>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Target Audience <span className="text-gray-400 dark:text-gray-500 font-normal text-xs">(optional)</span>
         </label>
         <input
           type="text"
           value={values.targetAudience}
           onChange={set("targetAudience")}
           placeholder="e.g., Entrepreneurs aged 25-35, fitness enthusiasts..."
-          className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+          className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Extra Context <span className="text-gray-400 font-normal text-xs">(optional)</span>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Extra Context <span className="text-gray-400 dark:text-gray-500 font-normal text-xs">(optional)</span>
         </label>
         <textarea
           rows={3}
           value={values.extraContext}
           onChange={set("extraContext")}
           placeholder="Any additional details, brand guidelines, or specific requirements..."
-          className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm"
+          className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm"
         />
       </div>
 

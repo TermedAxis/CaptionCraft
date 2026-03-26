@@ -56,12 +56,12 @@ export function ModelSelector({ feature, plan, selected, onChange, onUpgradeRequ
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <label className="block text-sm font-medium text-gray-700">AI Model</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">AI Model</label>
         {isFree && (
           <button
             type="button"
             onClick={onUpgradeRequired}
-            className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
+            className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium flex items-center gap-1"
           >
             <Lock className="w-3 h-3" />
             Upgrade to unlock
@@ -84,18 +84,18 @@ export function ModelSelector({ feature, plan, selected, onChange, onUpgradeRequ
                 isSelected
                   ? 'bg-blue-600 text-white border-blue-600'
                   : isAllowed
-                  ? 'bg-white text-gray-700 border-gray-200 hover:border-blue-300 hover:bg-blue-50'
-                  : 'bg-gray-50 text-gray-400 border-gray-200 cursor-pointer'
+                  ? 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950'
+                  : 'bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500 border-gray-200 dark:border-gray-700 cursor-pointer'
               }`}
             >
               <span className="absolute top-1.5 right-1.5">
-                <Lock className={`w-3 h-3 ${isAllowed ? 'opacity-0' : 'text-gray-400'}`} />
+                <Lock className={`w-3 h-3 ${isAllowed ? 'opacity-0' : 'text-gray-400 dark:text-gray-500'}`} />
               </span>
               <div className="flex items-center gap-1.5 mb-0.5">
-                <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-blue-100' : isAllowed ? 'text-blue-500' : 'text-gray-300'}`} />
+                <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-blue-100' : isAllowed ? 'text-blue-500 dark:text-blue-400' : 'text-gray-300 dark:text-gray-600'}`} />
                 <span className="font-semibold text-xs">{MODEL_LABELS[id]}</span>
               </div>
-              <span className={`block text-xs ${isSelected ? 'text-blue-100' : 'text-gray-400'}`}>
+              <span className={`block text-xs ${isSelected ? 'text-blue-100' : 'text-gray-400 dark:text-gray-500'}`}>
                 {isFree
                   ? PLAN_NAMES[requiredPlan]
                   : isAllowed
@@ -106,7 +106,7 @@ export function ModelSelector({ feature, plan, selected, onChange, onUpgradeRequ
           );
         })}
       </div>
-      <p className="text-xs mt-1.5 text-gray-400">
+      <p className="text-xs mt-1.5 text-gray-400 dark:text-gray-500">
         {isFree ? 'Upgrade to access faster, more powerful AI models' : MODEL_DESCRIPTIONS[selected]}
       </p>
     </div>

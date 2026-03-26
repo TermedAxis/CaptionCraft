@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ImageIcon, Loader2, RefreshCw, Download, X, Sparkles } from "lucide-react";
+import { Image as ImageIcon, Loader2, RefreshCw, Download, X, Sparkles } from "lucide-react";
 
 interface ImageGeneratorPanelProps {
   defaultPrompt: string;
@@ -37,11 +37,11 @@ export function ImageGeneratorPanel({
   };
 
   return (
-    <div className="border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm">
-      <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
-        <ImageIcon className="w-4 h-4 text-blue-600" />
-        <span className="text-sm font-semibold text-gray-800">{label}</span>
-        <span className="ml-auto text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">AI Generated</span>
+    <div className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden bg-white dark:bg-gray-900 shadow-sm">
+      <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center gap-2">
+        <ImageIcon className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+        <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">{label}</span>
+        <span className="ml-auto text-xs text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">AI Generated</span>
       </div>
 
       <div className="p-4 space-y-3">
@@ -51,7 +51,7 @@ export function ImageGeneratorPanel({
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             placeholder="Describe the image you want..."
-            className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
           <button
             onClick={() => onGenerate(imageKey, prompt, width, height)}
@@ -68,14 +68,14 @@ export function ImageGeneratorPanel({
         </div>
 
         {error && (
-          <p className="text-xs text-red-600 bg-red-50 px-3 py-2 rounded-lg">{error}</p>
+          <p className="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950 px-3 py-2 rounded-lg">{error}</p>
         )}
 
         {loading && !imageUrl && (
-          <div className="aspect-square rounded-xl bg-gray-100 flex flex-col items-center justify-center gap-3">
+          <div className="aspect-square rounded-xl bg-gray-100 dark:bg-gray-800 flex flex-col items-center justify-center gap-3">
             <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-            <p className="text-sm text-gray-500">Generating your image...</p>
-            <p className="text-xs text-gray-400">This may take 10-20 seconds</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Generating your image...</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500">This may take 10-20 seconds</p>
           </div>
         )}
 

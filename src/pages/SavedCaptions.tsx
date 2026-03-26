@@ -73,12 +73,12 @@ export function SavedCaptions({ onRequestAuth: _onRequestAuth }: SavedCaptionsPr
     return (
       <div className="max-w-5xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Saved Media</h1>
-          <p className="text-gray-600">Access all your generated content including captions, scripts, thumbnails, and more</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Saved Media</h1>
+          <p className="text-gray-600 dark:text-gray-400">Access all your generated content including captions, scripts, thumbnails, and more</p>
         </div>
-        <div className="bg-gray-50 rounded-xl border-2 border-dashed border-gray-300 p-16 text-center">
-          <p className="text-gray-600 font-medium mb-2">Sign in to view your saved media</p>
-          <p className="text-sm text-gray-400">Your saved content will appear here after signing in</p>
+        <div className="bg-gray-50 dark:bg-gray-900 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 p-16 text-center">
+          <p className="text-gray-600 dark:text-gray-300 font-medium mb-2">Sign in to view your saved media</p>
+          <p className="text-sm text-gray-400 dark:text-gray-500">Your saved content will appear here after signing in</p>
         </div>
       </div>
     );
@@ -87,16 +87,16 @@ export function SavedCaptions({ onRequestAuth: _onRequestAuth }: SavedCaptionsPr
   return (
     <div className="max-w-5xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Saved Media</h1>
-        <p className="text-gray-600">Access all your generated content including captions, scripts, thumbnails, and more</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Saved Media</h1>
+        <p className="text-gray-600 dark:text-gray-400">Access all your generated content including captions, scripts, thumbnails, and more</p>
       </div>
 
       <div className="mb-6 flex items-center gap-3">
-        <Filter className="w-5 h-5 text-gray-400" />
+        <Filter className="w-5 h-5 text-gray-400 dark:text-gray-500" />
         <select
           value={selectedPlatform}
           onChange={(e) => setSelectedPlatform(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
         >
           <option value="all">All Media</option>
           <option value="posts">Posts</option>
@@ -106,7 +106,7 @@ export function SavedCaptions({ onRequestAuth: _onRequestAuth }: SavedCaptionsPr
           <option value="scripts">Scripts</option>
           <option value="thumbnails">Thumbnails</option>
         </select>
-        <span className="text-sm text-gray-600">
+        <span className="text-sm text-gray-600 dark:text-gray-400">
           {captions.length} {captions.length === 1 ? 'item' : 'items'}
         </span>
       </div>
@@ -116,39 +116,39 @@ export function SavedCaptions({ onRequestAuth: _onRequestAuth }: SavedCaptionsPr
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
         </div>
       ) : captions.length === 0 ? (
-        <div className="bg-gray-50 rounded-xl border-2 border-dashed border-gray-300 p-12 text-center">
-          <p className="text-gray-600 mb-4">No saved media yet</p>
-          <p className="text-sm text-gray-500">Generate and save content to see it here</p>
+        <div className="bg-gray-50 dark:bg-gray-900 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 p-12 text-center">
+          <p className="text-gray-600 dark:text-gray-300 mb-4">No saved media yet</p>
+          <p className="text-sm text-gray-500 dark:text-gray-500">Generate and save content to see it here</p>
         </div>
       ) : (
         <div className="space-y-4">
           {captions.map((caption) => (
-            <div key={caption.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div key={caption.id} className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <span className="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-semibold rounded-full capitalize">
+                  <span className="px-3 py-1 bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-xs font-semibold rounded-full capitalize">
                     {caption.platform}
                   </span>
-                  <span className="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full capitalize">
+                  <span className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs font-medium rounded-full capitalize">
                     {caption.tone}
                   </span>
-                  <span className="text-xs text-gray-500">{formatDate(caption.created_at)}</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-500">{formatDate(caption.created_at)}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleCopy(caption.id, caption.caption_text, caption.hashtags)}
-                    className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition"
+                    className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition"
                     title="Copy to clipboard"
                   >
                     {copiedId === caption.id ? (
-                      <Check className="w-5 h-5 text-green-600" />
+                      <Check className="w-5 h-5 text-green-600 dark:text-green-400" />
                     ) : (
                       <Copy className="w-5 h-5" />
                     )}
                   </button>
                   <button
                     onClick={() => handleDelete(caption.id)}
-                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+                    className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 rounded-lg transition"
                     title="Delete caption"
                   >
                     <Trash2 className="w-5 h-5" />
@@ -157,17 +157,17 @@ export function SavedCaptions({ onRequestAuth: _onRequestAuth }: SavedCaptionsPr
               </div>
 
               <div className="mb-3">
-                <p className="text-sm font-medium text-gray-500 mb-1">Topic:</p>
-                <p className="text-gray-700">{caption.topic}</p>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Topic:</p>
+                <p className="text-gray-700 dark:text-gray-300">{caption.topic}</p>
               </div>
 
-              <div className="bg-gray-50 rounded-lg p-4 mb-3">
-                <p className="text-gray-900 whitespace-pre-wrap">{caption.caption_text}</p>
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 mb-3">
+                <p className="text-gray-900 dark:text-gray-100 whitespace-pre-wrap">{caption.caption_text}</p>
               </div>
 
               {caption.hashtags && (
-                <div className="pt-3 border-t border-gray-100">
-                  <p className="text-blue-600 text-sm">{caption.hashtags}</p>
+                <div className="pt-3 border-t border-gray-100 dark:border-gray-700">
+                  <p className="text-blue-600 dark:text-blue-400 text-sm">{caption.hashtags}</p>
                 </div>
               )}
             </div>
